@@ -1,0 +1,12 @@
+[submodule "compiler_scanner"]
+	path = compiler_scanner
+	url = git@github.com:benjlouie/compiler_scanner.git
+[submodule "compiler_parser"]
+	path = compiler_parser
+	url = git@github.com:benjlouie/compiler_parser.git
+[submodule "compiler_semantics"]
+	path = compiler_semantics
+	url = git@github.com:benjlouie/compiler_semantics.git
+[submodule "compiler_codegen"]
+	path = compiler_codegen
+	url = git@github.com:benjlouie/compiler_codegen.git
