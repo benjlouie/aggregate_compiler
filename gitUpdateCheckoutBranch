@@ -1,0 +1,35 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]; then
+	echo "I need a name of a branch after $0 and that's it."
+	exit
+fi
+
+DIRS=`ls --time-style="long-iso"  -l ../aggregate_compiler | egrep '^d' | awk '{print $8}'`
+
+echo "Switching to Master and Pulling"
+
+for DIR in $DIRS; do
+	echo ""
+	echo $DIR
+	cd $DIR
+	git pull && git checkout $1 && git pull
+	cd ..
+done
+
+echo "Pruning Non-Existent Remote Branches"
+
+for DIR in $DIRS; do
+	echo ""
+	echo $DIR
+	cd $DIR
+	PRUNE=`git remote prune origin`
+	if [ "$PRUNE" = "*\n*\n*" ] 
+	then 
+		echo $PRUNE
+	else
+		echo "Nothing to prune"
+	fi
+
+	cd ..
+done
