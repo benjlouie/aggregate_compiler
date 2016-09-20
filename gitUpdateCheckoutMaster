@@ -2,12 +2,29 @@
 
 DIRS=`ls --time-style="long-iso"  -l ../aggregate_compiler | egrep '^d' | awk '{print $8}'`
 
+echo "Switching to Master and Pulling"
+
 for DIR in $DIRS; do
+	echo ""
 	echo $DIR
 	cd $DIR
-	git checkout master
-	git pull
+	git checkout master && git pull
 	cd ..
-	echo ""
 done
 
+echo "Pruning Non-Existent Remote Branches"
+
+for DIR in $DIRS; do
+	echo ""
+	echo $DIR
+	cd $DIR
+	PRUNE=`git prune`
+	if [ "$PRUNE" = "*\n*\n*" ] 
+	then 
+		echo $PRUNE
+	else
+		echo "Nothing to prune"
+	fi
+
+	cd ..
+done
