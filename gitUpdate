@@ -1,16 +1,5 @@
 #!/bin/bash
 
-if [ $# -ne 1 ]; then
-	echo "I need a name of a branch after $0 and that's it."
-	exit
-fi
-
-echo "Switching to Branch"
-
-git submodule foreach git checkout $1
-
-echo ""
-echo ""
 echo "Pulling each submodule"
 git submodule foreach git pull
 
