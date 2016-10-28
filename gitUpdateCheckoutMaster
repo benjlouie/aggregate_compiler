@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIRS=`ls --time-style="long-iso"  -l ../aggregate_compiler | egrep '^d' | awk '{print $8}'`
+git submodule init
 
 echo "Switching to Branch"
 
