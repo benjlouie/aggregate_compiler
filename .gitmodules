@@ -10,3 +10,6 @@
 [submodule "compiler_codegen"]
 	path = compiler_codegen
 	url = git@github.com:benjlouie/compiler_codegen.git
+[submodule "compiler_tests"]
+	path = compiler_tests
+	url = git@github.com:benjlouie/compiler_tests.git
