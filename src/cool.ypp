@@ -1,0 +1,214 @@
+%{
+	#include <stdio.h>
+	#include <vector>
+	#include <cstring>
+	#include <math.h>
+	#include <iostream>
+	#include "../src/ast.h"	
+	using namespace std;
+
+
+	extern char yytext[];
+	extern void yylex_destroy();
+	#define YYERROR_VERBOSE 1
+	int yylex();
+	extern int yylineno;
+	int yycol = 0;
+	Node* root;
+	void yyerror(const char *s)
+	{
+		fflush(stdout);
+		printf("ERROR: Parser: line %d column %d: %s\n",yylineno,yycol,s);
+		delete root;
+		yylex_destroy();
+		exit(1);
+	}
+
+	typedef struct _node {
+		struct _node * left;
+		struct _node * right;
+	} node;
+		
+%}
+
+// 3rd line
+// String, identifier, type, etc.
+%union
+{
+	char *Name;
+	int Value;
+	Node* node;
+}
+
+
+// 42 Tokens go here, all caps
+%token <Name> IDENTIFIER
+%token <Value> INTEGERLITERAL
+%token <Name> STRING
+%token <Name> TYPE
+
+%token <node> CASE
+%token <node> ESAC
+%token <node> FALSE
+%token <node> FI
+%token <node> IF
+%token <node> ELSE
+%token <node> IN 
+%token <node> INHERITS
+%token <node> ISVOID
+%token <node> LET
+%token <node> LOOP
+%token <node> NEW
+%token <node> NOT
+%token <node> OF
+%token <node> POOL
+%token <node> THEN
+%token <node> WHILE
+%token <node> TRUE
+%token <node> CLASS
+%token <node> AT
+%token <node> COLON
+%token <node> COMMA
+%token <node> DIVIDE
+%token <node> DOT
+%token <node> RARROW
+%token <node> EQUALS
+%token <node> LARROW
+%token <node> LBRACE
+%token <node> LE
+%token <node> LPAREN
+%token <node> LT
+%token <node> MINUS
+%token <node> PLUS
+%token <node> RBRACE
+%token <node> RPAREN
+%token <node> SEMI
+%token <node> TILDE
+%token <node> TIMES
+
+%type <node> root
+%type <node> program
+%type <node> class
+%type <node> featuresemi
+%type <node> prefeaturesemi
+%type <node> feature
+%type <node> formallist
+%type <node> formals
+%type <node> formal
+%type <node> expr
+%type <node> attype
+%type <node> exprlist2
+%type <node> exprlist
+%type <node> exprsemi
+%type <node> casebody
+%type <node> case
+%type <node> assexprlist
+%type <node> assexprlist2
+
+
+%right IN
+%left LARROW
+%left NOT
+%nonassoc LE LT EQUALS
+%left PLUS MINUS
+%left TIMES DIVIDE
+%left ISVOID
+%left TILDE
+%left AT
+%right DOT
+%%
+root		: program {$$ = $1; root = $$;}
+			;
+
+program		: class SEMI {$$ = new Node(AST_PROGRAM,1,$1);}
+			| class SEMI program {$$ = $3; $3->setFirstChild($1);}
+			;
+
+class		: CLASS TYPE LBRACE prefeaturesemi RBRACE {$$ = new Node(AST_CLASS,3,new Node(AST_TYPE, $2),new Node(AST_TYPE, "Object"),$4); free($2);}
+			| CLASS TYPE INHERITS TYPE LBRACE prefeaturesemi RBRACE {$$ = new Node(AST_CLASS,3,new Node(AST_TYPE, $2),new Node(AST_TYPE, $4),$6); free($2); free($4);}
+			;
+
+prefeaturesemi : {$$ = new Node(AST_NULL);}
+			| featuresemi {$$ = $1;}
+			;
+
+
+featuresemi : feature SEMI featuresemi {$$ = $3; $3->setFirstChild($1);}
+			| feature SEMI {$$ = new Node(AST_FEATURESET,1,$1);}
+			;
+
+feature		: IDENTIFIER LPAREN formallist RPAREN COLON TYPE LBRACE expr RBRACE {$$ = new Node(AST_FEATURE_METHOD,4,new Node(AST_METHOD_IDENTIFIER, $1),$3,new Node(AST_TYPE, $6),$8); free($1); free($6);}
+			| IDENTIFIER COLON TYPE {$$ = new Node(AST_FEATURE_ATTRIBUTE,3,new Node(AST_METHOD_IDENTIFIER, $1),new Node(AST_TYPE, $3),new Node(AST_NULL)); free($1); free($3);}
+			| IDENTIFIER COLON TYPE LARROW expr {$$ = new Node(AST_FEATURE_ATTRIBUTE,3,new Node(AST_METHOD_IDENTIFIER, $1),new Node(AST_TYPE, $3),$5); free($1); free($3);}
+			
+
+formallist	: {$$ = new Node(AST_NULL);}
+			| formals {$$ = $1;}
+			;
+
+formals		: formal COMMA formals {$$ = $3; $3->setFirstChild($1);}
+			| formal {$$ = new Node(AST_FORMALLIST,1,$1);}
+			;
+
+formal		: IDENTIFIER COLON TYPE {$$ = new Node(AST_FORMAL,2,new Node(AST_METHOD_IDENTIFIER, $1),new Node(AST_TYPE, $3)); free($1); free($3);}
+			;
+
+expr		: IDENTIFIER LARROW expr {$$ = new Node(AST_LARROW,2,new Node(AST_IDENTIFIER, $1),$3); free($1);}
+			| expr attype DOT IDENTIFIER LPAREN exprlist RPAREN {$$ = new Node(AST_DISPATCH,4,$1,$2,new Node(AST_METHOD_IDENTIFIER, $4),$6); free($4);}
+			| expr DOT IDENTIFIER LPAREN exprlist RPAREN {$$ = new Node(AST_DISPATCH,4,$1,new Node(AST_NULL),new Node(AST_METHOD_IDENTIFIER, $3),$5); free($3);}
+			| IDENTIFIER LPAREN exprlist RPAREN {$$ = new Node(AST_DISPATCH,4,new Node(AST_NULL),new Node(AST_NULL),new Node(AST_METHOD_IDENTIFIER, $1),$3); free($1); }
+			| IF expr THEN expr ELSE expr FI {$$ = new Node(AST_IF,6,$2, new Node(AST_IFTEST),$4,new Node(AST_IFTHEN),$6,new Node(AST_IFELSE));}
+			| WHILE expr LOOP expr POOL {$$ = new Node(AST_WHILE,3,$2, new Node(AST_WHILECOMPARE),$4);}
+			| LBRACE exprsemi RBRACE {$$ = $2;}
+			| LET assexprlist IN expr {$$ = new Node(AST_LET,2,$2,$4);}
+			| CASE expr OF casebody ESAC {$$ = new Node(AST_CASESTATEMENT,2,$2,$4);}
+			| NEW TYPE {$$ = new Node(AST_NEW,1,new Node(AST_TYPE, $2)); free($2);}
+			| expr PLUS expr {$$ = new Node(AST_PLUS,2,$1,$3);}
+			| expr MINUS expr {$$ = new Node(AST_MINUS,2,$1,$3);}
+			| expr TIMES expr {$$ = new Node(AST_TIMES,2,$1,$3);}
+			| expr DIVIDE expr {$$ = new Node(AST_DIVIDE,2,$1,$3);}
+			| TILDE expr {$$ = new Node(AST_TILDE,1,$2);}
+			| expr LT expr {$$ = new Node(AST_LT,2,$1,$3);}
+			| expr LE expr {$$ = new Node(AST_LE,2,$1,$3);}
+			| expr EQUALS expr {$$ = new Node(AST_EQUALS,2,$1,$3);}
+			| NOT expr {$$ = new Node(AST_NOT,1,$2);}
+			| LPAREN expr RPAREN {$$ = $2;}
+			| IDENTIFIER {$$ = new Node(AST_IDENTIFIER, $1); free($1);}
+			| INTEGERLITERAL {$$ = new Node(AST_INTEGERLITERAL, to_string($1));}
+			| STRING {$$ = new Node(AST_STRING, $1); free($1);}
+			| TRUE {$$ = new Node(AST_TRUE);}
+			| FALSE {$$ = new Node(AST_FALSE);}
+			| ISVOID expr {$$ = new Node(AST_ISVOID,1,$2);}
+			;
+
+assexprlist2	:	IDENTIFIER COLON TYPE {$$ = new Node(AST_IDTYPEEXPR,3,new Node(AST_LET_IDENTIFIER, $1),new Node(AST_TYPE, $3),new Node(AST_NULL)); free($1); free($3);}
+			| IDENTIFIER COLON TYPE LARROW expr {$$ = new Node(AST_IDTYPEEXPR,3,new Node(AST_LET_IDENTIFIER, $1),new Node(AST_TYPE, $3),$5); free($1); free($3);}
+			;
+
+assexprlist	: 	assexprlist2 {$$ = new Node(AST_IDTYPEEXPRLIST,1,$1);}
+			| assexprlist COMMA assexprlist2 {$$ = $1; $$->addChild($3);}
+			;
+
+attype		: AT TYPE {$$ = new Node(AST_TYPE,$2); free($2);}
+			;
+
+exprlist	: {$$ = new Node(AST_NULL);}
+			| exprlist2 {$$ = $1;}
+			;
+			
+exprlist2	: expr COMMA exprlist2 {$$ = $3; $3->setFirstChild($1);}
+			| expr {$$ = new Node(AST_EXPRLIST,1,$1);}
+			;
+
+exprsemi	: expr SEMI exprsemi {$$ = $3; $3->setFirstChild($1); }
+			| expr SEMI {$$ = new Node(AST_EXPRSEMILIST,1,$1); }
+			;
+
+casebody	: case {$$ = new Node(AST_CASEBODY,1,$1); }
+			| case casebody {$$ = $2; $2->setFirstChild($1);}
+			;
+
+case 		: IDENTIFIER COLON TYPE RARROW expr SEMI {$$ = new Node(AST_CASE,3,new Node(AST_CASE_IDENTIFIER, $1),new Node(AST_TYPE, $3),$5); free($1); free($3);}
+			;
+
+%%

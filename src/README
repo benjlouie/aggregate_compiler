@@ -1,0 +1,46 @@
+This is the README for Team Literally Cool's build system.
+
+-------------------------------- GENERAL LAYOUT --------------------------------
+The directory 'cool-examples' houses some cool example files.  I would recommend
+finding more and adding them to this directory, for more complete testing. The 
+directory 'src' should house all of your source code.  The generated directory
+'bin' holds all the compiler output (not your compiler, but flex/bison/g++). 
+
+--------------------------------- INSTRUCTIONS ---------------------------------
+Type `make` to build all the source.  On line 31 of the included Makefile, you
+can add additional objects that you will create.  Pretend you just made the 
+file typecheck.cpp that runs type checking.  Put this in the src directory, and 
+add it to the objects definition in the makefile.  This will ensure that it is
+built in to your binary.
+
+Type `make clean` to remove all generated files.
+
+Add unit tests to the tests.cpp file in the src subdirectory. I have added tests
+for the generic tree and the Abstract Syntax Tree, so you can see how to format
+them.  This file automatically gets built and ran when you test.
+
+The only integration tests I have included check against the reference compiler.
+If you would like to add something more complex, check out test.sh
+
+---------------------------------- FILE LIST -----------------------------------
+cool-examples/  these are example cool files
+src/            this is where all the source code should go.
+   ast.cpp      this is the AST implementation code
+   ast.h        this is the AST header file code
+   cool.l       this is the lexer definition file that is fed to flex
+   cool.ypp     this is the grammar definition file that is fed to bison
+   driver.cpp   this is the file that contains main
+   driver.h     this is the file that has all header definitions for main
+   tests.cpp    this is the file that contains the unit tests
+   testtree.cpp this is a generic implementation to allow testing of the 
+                  generic tree.
+   testtree.h   this is a generic header to allow testing of the generic tree.
+   tree.cpp     this is the generic tree implementation file
+   tree.h       this is the generic tree header file
+Makefile        this is the master makefile.  Feel free to edit as needed
+README          this file
+ref_cool        this is the reference compiler
+test.sh         this is the file that runs integration tests
+
+------------------------------ CONTACT INFORMATION -----------------------------
+If you have any questions, please contact Sean Salinas at ssalinas@cs.nmt.edu.
