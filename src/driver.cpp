@@ -10,7 +10,6 @@
 int main(int argc, char **argv)
 {
 	int i;
-	char * inputFileName = NULL;
 
 	// Steps to compiling
 	bool lexOnly = false;
@@ -19,13 +18,6 @@ int main(int argc, char **argv)
 	bool buildIR = true;
 	bool buildASM = true;
 	bool runGCC = true;
-
-	filename_append = (char *)malloc(sizeof(char) * 10);
-	if (filename_append == NULL)
-	{
-		perror("Can't malloc space for filename append");
-		exit(1);
-	}
 
 	for (i = 1; i < argc; i++)
 	{
@@ -38,7 +30,7 @@ int main(int argc, char **argv)
 			buildIR = false;
 			buildASM = false;
 			runGCC = false;
-			strcpy(filename_append, "-lex-meh");
+			filename_append = "-lex-meh";
 		}
 		else if (strcmp(argv[i], "--parse") == 0)
 		{
@@ -48,7 +40,7 @@ int main(int argc, char **argv)
 			buildIR = false;
 			buildASM = false;
 			runGCC = false;
-			strcpy(filename_append, "-ast-meh");
+			filename_append = "-ast-meh";
 		}
 		else if (strcmp(argv[i], "--type") == 0)
 		{
@@ -59,7 +51,7 @@ int main(int argc, char **argv)
 			buildIR = false;
 			buildASM = false;
 			runGCC = false;
-			strcpy(filename_append, "-type-meh");
+			filename_append = "-type-meh";
 		}
 		else if (strcmp(argv[i], "--ir") == 0)
 		{
@@ -70,7 +62,7 @@ int main(int argc, char **argv)
 			buildIR = true;
 			buildASM = false;
 			runGCC = false;
-			strcpy(filename_append, "-IR-meh");
+			filename_append = "-IR-meh";
 		}
 		else if (strcmp(argv[i], "--asm") == 0)
 		{
@@ -81,7 +73,7 @@ int main(int argc, char **argv)
 			buildIR = true;
 			buildASM = true;
 			runGCC = false;
-			strcpy(filename_append, "-meh.s");
+			filename_append = "-meh.s";
 		}
 		else
 		{
@@ -113,11 +105,11 @@ int main(int argc, char **argv)
 	yyin = infile;
 
 	// Set up the output file.
-	if (strlen(filename_append) == 0)
-		strcpy(filename_append, "-meh.s");
-	outname = (char *)malloc(sizeof(char) * (strlen(inputFileName) + 10));
-	strcpy(outname, inputFileName);
-	strcat(outname, filename_append);
+	if (filename_append.size() == 0)
+		filename_append = "-meh.s";
+	//outname = (char *)malloc(sizeof(char) * (strlen(inputFileName) + 10));
+	outname = inputFileName;
+	outname += filename_append;
 	outfile.open(outname, std::fstream::out);
 
 	// Give the outfile to the lexer/parser
@@ -126,7 +118,7 @@ int main(int argc, char **argv)
 	{
 		// Lex Only.
 		int lexerOutput;
-		yyout = fopen(outname, "w");
+		yyout = fopen(outname.c_str(), "w");
 		if (yyout == NULL)
 		{
 			perror("Cannot open output file");
@@ -156,7 +148,7 @@ int main(int argc, char **argv)
 		}
 		else
 		{
-			yyout = fopen(outname, "w");
+			yyout = fopen(outname.c_str(), "w");
 			if (yyout == NULL)
 			{
 				perror("Cannot open output file");

@@ -23,10 +23,11 @@ extern FILE *yyout;
 extern Node *root;
 
 
+char * inputFileName = NULL;
 FILE *infile = NULL;
 fstream outfile;
-char *outname = NULL;
-char *filename_append = NULL;
+string outname;
+string filename_append;
 
 void printHelp(char *);
 int yylex(void);
