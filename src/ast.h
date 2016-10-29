@@ -94,6 +94,7 @@ private:
 	NodeType type;
 	string valType;
 	string reg = "";
+    int lineNumber;
 
 public:
 	Node();

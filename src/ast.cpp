@@ -9,20 +9,25 @@
 #include "ast.h"
 #include <iostream>
 
+extern int yylineno;
+
 Node::Node()
 {
 	this->type = AST_NULL;
+    lineNumber = yylineno;
 }
 
 Node::Node(NodeType type)
 {
 	this->type = type;
+    lineNumber = yylineno;
 }
 
 Node::Node(NodeType type, string value)
 {
 	this->type = type;
 	this->value = value;
+    lineNumber = yylineno;
 }
 
 Node::Node(NodeType type, string value, int numChildren, ...)
@@ -39,6 +44,7 @@ Node::Node(NodeType type, string value, int numChildren, ...)
 		this->addChild(child);
 	}
 	va_end(ArgumentPointer);
+    lineNumber = yylineno;
 }
 
 Node::Node(NodeType type, int numChildren, ...)
@@ -53,6 +59,7 @@ Node::Node(NodeType type, int numChildren, ...)
 		this->addChild(child);
 	}
 	va_end(ArgumentPointer);
+    lineNumber = yylineno;
 }
 
 
