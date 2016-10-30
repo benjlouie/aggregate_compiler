@@ -5,7 +5,11 @@
  * This is the driver file that contains the main function.
  *
  */
+#ifdef __linux__
+#include "../src/driver.h"
+#else
 #include "driver.h"
+#endif
 
 int main(int argc, char **argv)
 {

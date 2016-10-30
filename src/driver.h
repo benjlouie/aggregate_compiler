@@ -14,7 +14,9 @@
 #include <stdlib.h>
 #include <vector>
 #include <fstream>
+#include <unordered_map>
 #include "ast.h"
+#include "semant.h"
 
 extern int yylineno;
 extern int nelements;
@@ -28,6 +30,7 @@ FILE *infile = NULL;
 fstream outfile;
 string outname;
 string filename_append;
+std::unordered_map<std::string, bool> globalTypeList;
 
 void printHelp(char *);
 int yylex(void);
