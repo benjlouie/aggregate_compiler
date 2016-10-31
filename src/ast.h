@@ -23,43 +23,25 @@ enum NodeType
 	AST_STRING,
 	AST_TYPE,
 	AST_CASE,
-	AST_ESAC,
 	AST_FALSE,
-	AST_FO,
 	AST_IF,
 	AST_IFTEST,
 	AST_IFTHEN,
 	AST_IFELSE,
-	AST_ELSE,
-	AST_IN,
-	AST_INHERITS,
 	AST_ISVOID,
-	AST_LOOP,
 	AST_NEW,
 	AST_NOT,
-	AST_OF,
-	AST_POOL,
-	AST_THEN,
 	AST_WHILE,
 	AST_WHILECOMPARE,
 	AST_TRUE,
 	AST_CLASS,
-	AST_COLON,
-	AST_COMMA,
 	AST_DIVIDE,
-	AST_DOT,
-	AST_RARROW,
 	AST_EQUALS,
 	AST_LARROW,
-	AST_LBRACE,
 	AST_LE,
-	AST_LPAREN,
 	AST_LET,
 	AST_MINUS,
 	AST_PLUS,
-	AST_RBARCE,
-	AST_RPAREN,
-	AST_SEMI,
 	AST_TILDE,
 	AST_TIMES,
 	AST_PROGRAM,
@@ -71,11 +53,8 @@ enum NodeType
 	AST_FORMAL,
 	AST_DISPATCH,
 	AST_LT,
-	AST_ROOT,
 	AST_EXPRLIST,
 	AST_EXPRSEMILIST,
-	AST_CASEBODY,
-	AST_TEST,
 	AST_IDTYPEEXPR,
 	AST_IDTYPEEXPRLIST,
 	AST_CASESTATEMENT,
@@ -88,7 +67,7 @@ enum NodeType
 class Node : public Tree
 {
 
-private:
+public:
 	vector<Node *> children;
 	string value;
 	NodeType type;
@@ -96,7 +75,6 @@ private:
 	string reg = "";
     int lineNumber;
 
-public:
 	Node();
 	/**
 	 * This creates a new node with NodeType type
@@ -132,7 +110,6 @@ public:
 	 * @return type
 	 */
 	NodeType getType();
-
 
 	virtual ~Node();
 };

@@ -140,7 +140,12 @@ int main(int argc, char **argv)
 		// Lex and Parse
 		if ((typeCheck) || (buildIR) || (buildASM))
 		{
+#ifdef __linux__
 			yyout = fopen("/dev/null", "w");
+#else
+			yyout = fopen("nul", "w");
+#endif
+
 			if (yyout == NULL)
 			{
 				perror("Cannot open output file");
@@ -165,6 +170,7 @@ int main(int argc, char **argv)
 	}
 	if (typeCheck)
 	{
+		semant();
 		// Lexing and parsing are done, so start typecheck
 		// TODO: Insert your calls to typechecking functions here.
 		exit(1);
