@@ -15,8 +15,8 @@
 #include <vector>
 #include <fstream>
 #include <unordered_map>
-#include "semant.h"
-#include "ast.h"
+#include "../compiler_semantics/semant.h"
+#include "../src/ast.h"
 
 extern int yylineno;
 extern int nelements;
