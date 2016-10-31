@@ -27,6 +27,21 @@ PARSERH=${BINDIR}/parser_cool.h
 PARSERO=${BINDIR}/parser_cool.o
 PARSERYPP=${PARSEDIR}/cool.ypp
 
+SEMCPP=${SEMDIR}/semant.cpp 
+SEMH=${SEMDIR}/semant.h 
+SEMO=${SEMDIR}/semant.o
+#SEM_SYMBOLTABLECPP=${SEMDIR}/symbolTable.cpp
+SEM_SYMBOLTABLEH=${SEMDIR}/symbolTable.h
+SEM_SYMBOLTABLEO=${SEMDIR}/symbolTable.o
+SEM_CLASSINHERITANCECPP=${SEMDIR}/classInheritance.cpp
+SEM_CLASSINHERITANCEH=${SEMDIR}/classInheritance.h
+SEM_CLASSINHERITANCEO=${SEMDIR}/classInheritance.o
+SEM_SCOPINGCPP=${SEMDIR}/scoping.cpp
+SEM_SCOPINGH=${SEMDIR}/scoping.h
+SEM_SCOPINGO=${SEMDIR}/scoping.o
+
+
+
 SHELL='/bin/bash'
 REF_COMPILER="ref_cool"
 
@@ -48,9 +63,9 @@ ${BINDIR}/%.o: ${SRCDIR}/%.cpp ${SRCDIR}/%.h
 all: clean compiler
 	@echo -e "\033[0;32m    Build successful. Regi compiler ready for use. \033[0m"
 
-compiler: preliminary ${LEXO} ${PARSERO} ${_TARGETS} ${BINDIR}/driver.o
+compiler: preliminary ${LEXO} ${PARSERO} ${_TARGETS} ${BINDIR}/driver.o ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO}
 	@echo Done compiling individual objects. Assembling pieces...
-	${CXX} ${CXXFLAGS} -o ${COMPILER_BIN} ${LEXO} ${PARSERO} ${_TARGETS} ${BINDIR}/driver.o
+	${CXX} ${CXXFLAGS} -o ${COMPILER_BIN} ${LEXO} ${PARSERO} ${SEMO} ${SEM_SYMBOLTABLEH} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${_TARGETS} ${BINDIR}/driver.o
 
 ${LEXO}: ${LEXC} ${PARSERH}
 	${CXX} ${CXXFLAGS} -c ${LEXC} -o ${LEXO}
@@ -64,6 +79,18 @@ ${PARSERCPP} ${PARSERH}: ${PARSERYPP}
 bisonerr: ${PARSERYPP}
 	bison -v ${PARSERYPP}
 
+${SEMO}: ${SEMCPP} ${SEMH} 
+	${CXX} ${CXXFLAGS} -c ${SEMCPP} -o ${SEMO}
+    
+${SEM_SYMBOLTABLEO}: ${SEM_SYMBOLTABLEH}
+	${CXX} ${CXXFLAGS} -c ${SEM_SYMBOLTABLEH} -o $@
+
+${SEM_CLASSINHERITANCEO}: ${SEM_CLASSINHERITANCECPP} ${SEM_CLASSINHERITANCEH}
+	${CXX} ${CXXFLAGS} -c ${SEM_CLASSINHERITANCECPP} -o $@
+    
+${SEM_SCOPINGO}: ${SEM_SCOPINGCPP} ${SEM_SCOPINGH}
+	${CXX} ${CXXFLAGS} -c ${SEM_SCOPINGCPP} -o $@
+    
 preliminary:
 	@echo Checking if bin directory exists.
 	@ if [ ! -d "bin" ]; then mkdir bin; fi
