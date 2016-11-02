@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 	bool buildIR = true;
 	bool buildASM = true;
 	bool runGCC = true;
-
+	
 	for (i = 1; i < argc; i++)
 	{
 		if (strcmp(argv[i], "--lex") == 0)
@@ -130,17 +130,20 @@ int main(int argc, char **argv)
 		}
 		fclose(yyout);
 		yyout = NULL;
+		if (numErrors > 0) {
+			exit(1);
+		}
 	}
 	if (parse)
 	{
 		// Lex and Parse
 		if ((typeCheck) || (buildIR) || (buildASM))
 		{
-#ifdef __linux__
+			#ifdef __linux__
 			yyout = fopen("/dev/null", "w");
-#else
+			#else
 			yyout = fopen("nul", "w");
-#endif
+			#endif
 
 			if (yyout == NULL)
 			{
@@ -150,6 +153,9 @@ int main(int argc, char **argv)
 			yyparse();
 			fclose(yyout);
 			yyout = NULL;
+			if (numErrors > 0) {
+				exit(1);
+			}
 		}
 		else
 		{
@@ -162,6 +168,9 @@ int main(int argc, char **argv)
 			yyparse();
 			fclose(yyout);
 			yyout = NULL;
+			if (numErrors > 0) {
+				exit(1);
+			}
 		}
 	}
 	if (typeCheck)

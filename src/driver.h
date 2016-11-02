@@ -23,6 +23,7 @@ extern int nelements;
 extern FILE *yyin;
 extern FILE *yyout;
 extern Node *root;
+extern int numErrors;
 
 
 char * inputFileName = NULL;
