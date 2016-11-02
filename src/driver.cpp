@@ -130,6 +130,9 @@ int main(int argc, char **argv)
 		}
 		fclose(yyout);
 		yyout = NULL;
+		if (numErrors > 0) {
+			exit(1);
+		}
 	}
 	if (parse)
 	{

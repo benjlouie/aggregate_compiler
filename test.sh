@@ -1,6 +1,6 @@
 #!/bin/bash
 
-COMPILER_CMD="./meh"
+COMPILER_CMD="./holiman"
 PASS="[\033[32mPASS\033[0m]"
 PASSMODULE="[\033[32mPASS MODULE\033[0m]"
 FAIL="[\033[22;41;30mFAIL\033[0m]"
@@ -8,10 +8,18 @@ REF_COMPILER="./ref_cool"
 LEXER_CMD="${COMPILER_CMD} --lex"
 PARSER_CMD="${COMPILER_CMD} --parse"
 TYPE_CHECKER_CMD="${COMPILER_CMD} --type"
+TESTS="compiler_tests"
+LEXER_DIR="lexer"
+GOODCL="good"
+BADCL="bad"
+ELSECL="else"
+LEXGOOD=`find $TESTS/$LEXER_DIR/$GOODCL -iname *.cl`
+LEXBAD=`find $TESTS/$LEXER_DIR/$BADCL -iname *.cl`
+ELSEFILES=`find $TESTS/$ELSECL -iname *.cl`
 
 fail_tests=0
 
-test0 ()
+acceptFunc ()
 {
 	# echo "Testing $1 for return status 0."
 	OUTPUT=$($1)
@@ -26,7 +34,7 @@ test0 ()
 	fi
 }
 
-test1 ()
+rejectFunc ()
 {
 	# echo "Testing $1 for return status 1."
 	OUTPUT=$($1)
@@ -42,63 +50,47 @@ test1 ()
 	fi
 }
 
+echo "-----Converting to Unix Newlines.--------"
+
+if [ `ls *.cl 2> /dev/null | wc -l` -gt 0 ]; then
+	echo "There are .cl files in your aggregate direcotory. This file will not work with them there. Exiting."
+	exit 1
+fi
+ 
+dos2unix -q `find ${TESTS} -iname *.cl`
+
 echo "----------Starting shell tests.----------"
 
 # Insert tests here.
 
-# Lexer tests
-echo "Testing Lexer with test code."
-test0 "${LEXER_CMD} cool-examples/invalid_char_in_string.cl" "lexer: invalid char in string."
-test0 "${LEXER_CMD} cool-examples/invalid_chars_in_comments.cl" "lexer: invalid chars in comments.cl"
-test0 "${LEXER_CMD} cool-examples/unicode_in_string.cl" "lexer: unicode in string."
-test1 "${LEXER_CMD} cool-examples/hello-world-fail.cl" "lexer: hello-world-fail.cl"
-test1 "${LEXER_CMD} cool-examples/invalid_chars_as_id.cl" "lexer: invalid chars as ID"
-test1 "${LEXER_CMD} cool-examples/unicode_as_id.cl" "lexer: unicode as id."
-test0 "${LEXER_CMD} cool-examples/all_ids.cl" "lexer: all valid identifiers."
-test1 "${LEXER_CMD} cool-examples/eof_within_comment.cl" "lexer: eof before closing comment"
-test1 "${LEXER_CMD} cool-examples/eof_within_string.cl" "lexer: eof within string"
-
-echo "Testing Lexer with valid COOL code."
-test0 "${LEXER_CMD} cool-examples/arith.cl" "lexer: arith.cl"
-test0 "${LEXER_CMD} cool-examples/atoi.cl" "lexer: atoi.cl"
-test0 "${LEXER_CMD} cool-examples/cells.cl" "lexer: cells.cl"
-test0 "${LEXER_CMD} cool-examples/factorial.cl" "lexer: factorial.cl"
-test0 "${LEXER_CMD} cool-examples/hello-world.cl" "lexer: hello-world.cl"
-test0 "${LEXER_CMD} cool-examples/hs.cl" "lexer: hs.cl"
-test0 "${LEXER_CMD} cool-examples/list.cl" "lexer: list.cl"
-test0 "${LEXER_CMD} cool-examples/new-complex.cl" "lexer: new-complex.cl"
-test0 "${LEXER_CMD} cool-examples/primes.cl" "lexer: primes.cl"
-test0 "${LEXER_CMD} cool-examples/print-cool.cl" "lexer: print-cool.cl"
-test0 "${LEXER_CMD} cool-examples/sort-list.cl" "lexer: sort-list.cl"
-
-echo "Testing Lexer output vs COOL reference compiler output."
-for file in `ls cool-examples/*.cl`
-do
-	${LEXER_CMD} $file &> /dev/null
-	if [ $? -eq 0 ]; then
-		${REF_COMPILER} --lex $file &> /dev/null
-		test0 "diff ${file}-lex-meh ${file}-lex" "lexer: $file compared to reference compiler."
-	fi
+echo "Starting good lexical tests."
+for file in $LEXGOOD; do
+	acceptFunc "${LEXER_CMD} ${file}" "lexer: $file "
 done
+
+echo "Starting bad lexical tests."
+for file in $LEXBAD; do
+	rejectFunc "${LEXER_CMD} ${file}" "lexer: $file "
+done
+
+# Comment following line to keep the lexer output.
+rm -f cool-examples/*-lex-meh cool-examples/*-lex
 
 if [ $fail_tests -eq 0 ]; then
 	echo -e ${PASSMODULE} Lexer
 fi
 
-# Comment following line to keep the lexer output.
-rm -f cool-examples/*-lex-meh cool-examples/*-lex
-
 # Parser Tests
 echo "Testing parser return status vs COOL reference compiler."
-for file in `ls cool-examples/*.cl`
+for file in $ELSEFILES
 do
 	${REF_COMPILER} --parse $file &> /dev/null
 	if [ -e "${file}-ast" ]; then
 		# echo "${file}-ast exists, so it passed reference compiler."
-		test0 "${PARSER_CMD} ${file}" "parser: $file "
+		acceptFunc "${PARSER_CMD} ${file}" "parser: $file "
 	else
 		# echo "${file}-ast doesn't exist, so it failed reference compiler."
-		test1 "${PARSER_CMD} ${file}" "parser: $file "
+		rejectFunc "${PARSER_CMD} ${file}" "parser: $file "
 	fi
 	rm -f ${file}-ast ${file}-ast-meh
 done
@@ -106,7 +98,7 @@ done
 if [ $fail_tests -eq 0 ]; then
 	echo -e ${PASSMODULE} Parser
 fi
-
+exit
 # Type Checker Tests
 
 # Test against reference compiler
@@ -116,10 +108,10 @@ for file in `ls cool-examples/*.cl`
 do
 	${REF_COMPILER} --type $file &> /dev/null
 	if [ -e "${file}-type" ]; then
-		test0 "${TYPE_CHECKER_CMD} ${file}" "type checker: $file "
+		acceptFunc "${TYPE_CHECKER_CMD} ${file}" "type checker: $file "
 	else
 		# echo "${file}-ast doesn't exist, so it failed reference compiler."
-		test1 "${TYPE_CHECKER_CMD} ${file}" "type checker: $file "
+		rejectFunc "${TYPE_CHECKER_CMD} ${file}" "type checker: $file "
 	fi
 	rm -f ${file}-type ${file}-type-meh
 done
@@ -130,4 +122,5 @@ fi
 
 echo "Number of failed shell tests: ${fail_tests}"
 echo "----------Done with shell tests.----------"
+rm `find . -iname *-lex*`
 exit $((fail_tests))
