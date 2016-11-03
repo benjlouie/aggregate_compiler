@@ -60,6 +60,8 @@ enum NodeType
 	AST_CASE_IDENTIFIER
 };
 
+string enum2string(NodeType);
+
 class Node : public Tree
 {
 
@@ -107,6 +109,13 @@ public:
 	 */
 	NodeType getType();
 
+	/* auxillary functions */
+	void print(int level);
+	void recursive_print(int level);
+
+	/* call this one, not the other one with a param */
+	void print();
+	
 	virtual ~Node();
 };
 
