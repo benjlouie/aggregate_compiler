@@ -8,6 +8,8 @@ REF_COMPILER="./ref_cool"
 LEXER_CMD="${COMPILER_CMD} --lex"
 PARSER_CMD="${COMPILER_CMD} --parse"
 TYPE_CHECKER_CMD="${COMPILER_CMD} --type"
+IR_CMD="${COMPILER_CMD} --ir"
+CODEGEN_CMD="${COMPILER_CMD} --asm"
 TESTS="compiler_tests"
 LEXER_DIR="lexer"
 GOODCL="good"
@@ -37,7 +39,7 @@ acceptFunc ()
 rejectFunc ()
 {
 	# echo "Testing $1 for return status 1."
-	OUTPUT=$($1)
+	OUTPUT=$($1 2> /dev/null)
 	if [ $? -eq 1 ]; then
 		echo -e ${PASS} $2
 	else
@@ -48,6 +50,14 @@ rejectFunc ()
 		echo -e "-----End Message"
 		let fail_tests=fail_tests+1
 	fi
+}
+
+failExit ()
+{
+	echo "Number of failed shell tests: ${fail_tests}"
+	echo "----------Done with shell tests.----------"
+	rm `find . -iname *-lex*`
+	exit $((fail_tests))
 }
 
 echo "-----Converting to Unix Newlines.--------"
@@ -77,7 +87,9 @@ done
 rm -f cool-examples/*-lex-meh cool-examples/*-lex
 
 if [ $fail_tests -eq 0 ]; then
-	echo -e ${PASSMODULE} Lexer
+	echo -e ${PASSMODULE} Parser
+else
+	failExit
 fi
 
 # Parser Tests
@@ -97,14 +109,15 @@ done
 
 if [ $fail_tests -eq 0 ]; then
 	echo -e ${PASSMODULE} Parser
+else
+	failExit
 fi
-exit
 # Type Checker Tests
 
 # Test against reference compiler
 
 echo "Testing type checker return status vs COOL reference compiler."
-for file in `ls cool-examples/*.cl`
+for file in $ELSEFILES
 do
 	${REF_COMPILER} --type $file &> /dev/null
 	if [ -e "${file}-type" ]; then
@@ -117,10 +130,56 @@ do
 done
 
 if [ $fail_tests -eq 0 ]; then
-	echo -e ${PASSMODULE} Type Checker
+	echo -e ${PASSMODULE} Parser
+else
+	failExit 
+fi
+
+#IR Generation Tests
+
+# Test against reference compiler
+
+echo "Testing IR generation return status vs COOL reference compiler."
+for file in $ELSEFILES
+do
+	${REF_COMPILER} --ir $file &> /dev/null
+	if [ -e "${file}-ir" ]; then
+		acceptFunc "${IR_CMD} ${file}" "ir generation: $file "
+	else
+		# echo "${file}-ast doesn't exist, so it failed reference compiler."
+		rejectFunc "${IR_CMD} ${file}" "ir generation: $file "
+	fi
+	rm -f ${file}-type ${file}-type-meh
+done
+
+if [ $fail_tests -eq 0 ]; then
+	echo -e ${PASSMODULE} Parser
+else
+	failExit
+fi
+
+#IR Generation Tests
+
+# Test against reference compiler
+
+echo "Testing Code generation return status vs COOL reference compiler."
+for file in $ELSEFILES
+do
+	${REF_COMPILER} --ir $file &> /dev/null
+	if [ -e "${file}-s" ]; then
+		acceptFunc "${IR_CMD} ${file}" "code gen: $file "
+	else
+		# echo "${file}-ast doesn't exist, so it failed reference compiler."
+		rejectFunc "${TYPE_CHECKER_CMD} ${file}" "code gen: $file "
+	fi
+	rm -f ${file}-type ${file}-type-meh
+done
+
+if [ $fail_tests -eq 0 ]; then
+	echo -e ${PASSMODULE} Parser
+else
+	failExit
 fi
 
 echo "Number of failed shell tests: ${fail_tests}"
 echo "----------Done with shell tests.----------"
-rm `find . -iname *-lex*`
-exit $((fail_tests))
