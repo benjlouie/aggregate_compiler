@@ -6,11 +6,7 @@
  *
  */
 
-#ifdef __linux__
 #include "../src/ast.h"
-#else
-#include "ast.h"
-#endif
 #include <iostream>
 #include <string>
 
