@@ -12,6 +12,7 @@
 #include "ast.h"
 #endif
 #include <iostream>
+#include <string>
 
 extern int yylineno;
 
@@ -77,3 +78,117 @@ Node::~Node()
 	// LOL
 }
 
+string enum2string(NodeType n) {
+	string ntype;
+	switch (n) {
+	case AST_IDENTIFIER:
+		return "identifier";
+	case AST_INTEGERLITERAL:
+		return "integer literal";
+	case AST_STRING:
+		return "string literal";
+	case AST_TYPE:
+		return "Type";
+	case AST_CASE:
+		return "case";
+	case AST_CASELIST:
+		return "case list";
+	case AST_FALSE:
+		return "bool constant false";
+	case AST_IF:
+		return "if";
+	case AST_ISVOID:
+		return "isvoid";
+	case AST_NEW:
+		return "new";
+	case AST_NOT:
+		return "not";
+	case AST_WHILE:
+		return "while";
+	case AST_TRUE:
+		return "true";
+	case AST_CLASS:
+		return "class";
+	case AST_DIVIDE:
+		return "divide";
+	case AST_EQUALS:
+		return "equals";
+	case AST_LARROW:
+		return "assignment";
+	case AST_LE:
+		return "less than or equal";
+	case AST_LET:
+		return "let";
+	case AST_MINUS:
+		return "minus";
+	case AST_PLUS:
+		return "plus";
+	case AST_TILDE:
+		return "negation";
+	case AST_TIMES:
+		return "multiply";
+	case AST_PROGRAM:
+		return "program";
+	case AST_NULL:
+		return "null";
+	case AST_FEATURESET:
+		return "feature set";
+	case AST_FEATURE_METHOD:
+		return "feature method";
+	case AST_FEATURE_ATTRIBUTE:
+		return "feature attribute";
+	case AST_FORMALLIST:
+		return "formal list";
+	case AST_FORMAL:
+		return "formal";
+	case AST_DISPATCH:
+		return "dispatch";
+	case AST_LT:
+		return "less than";
+	case AST_EXPRLIST:
+		return "expression list";
+	case AST_EXPRSEMILIST:
+		return "block expression";
+	case AST_IDTYPEEXPR:
+		return "id, type, expression";
+	case AST_IDTYPEEXPRLIST: //not used TODO delete
+		return "id, type, expressionlist"; 
+	case AST_CASESTATEMENT:
+		return "case statement";
+	case AST_LET_IDENTIFIER:
+		return "let identifier";
+	case AST_METHOD_IDENTIFIER:
+		return "method identifier";
+	case AST_CASE_IDENTIFIER:
+		return "case identifier";
+	default:
+		return "Unknown node type";
+	}
+}
+
+void Node::recursive_print(int level) {
+	print(level);
+	Node *child;
+	for (auto c : getChildren()) {
+		child = (Node *) c;
+		child->recursive_print(level + 1);
+	}
+}
+
+void Node::print() {
+	recursive_print(0);
+}
+
+void Node::print(int level) {
+	/* fields:
+	 *	string value;
+	 *	NodeType type;
+	 *	string valType;
+	 *	string reg = "";
+	 *	int lineNumber;
+	 */
+	string tabs = string(level , '\t');
+	cout << tabs << enum2string(type) << endl;
+	cout << tabs << "type: " << valType << endl;
+	cout << tabs << "Line number: " << lineNumber << endl << endl;
+}
