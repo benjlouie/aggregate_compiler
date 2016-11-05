@@ -18,6 +18,7 @@ int main(int argc, char **argv)
 	bool buildIR = true;
 	bool buildASM = true;
 	bool runGCC = true;
+	bool prettyprint = false;
 	
 	for (i = 1; i < argc; i++)
 	{
@@ -41,6 +42,9 @@ int main(int argc, char **argv)
 			buildASM = false;
 			runGCC = false;
 			filename_append = "-ast-meh";
+		}
+		else if (strcmp(argv[i], "--pretty") == 0) {
+			prettyprint = true;
 		}
 		else if (strcmp(argv[i], "--type") == 0)
 		{
@@ -176,9 +180,13 @@ int main(int argc, char **argv)
 	if (typeCheck)
 	{
 		semant();
+		if (prettyprint) {
+			root->print();
+		}
 		if (numErrors > 0) {
 			exit(1);
 		}
+		
 	}
 	if (buildIR)
 	{
