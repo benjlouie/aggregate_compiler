@@ -176,9 +176,9 @@ int main(int argc, char **argv)
 	if (typeCheck)
 	{
 		semant();
-		// Lexing and parsing are done, so start typecheck
-		// TODO: Insert your calls to typechecking functions here.
-		exit(1);
+		if (numErrors > 0) {
+			exit(1);
+		}
 	}
 	if (buildIR)
 	{
