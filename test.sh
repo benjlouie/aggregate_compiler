@@ -40,15 +40,15 @@ rejectFunc ()
 {
 	# echo "Testing $1 for return status 1."
 	OUTPUT=$($1 2> /dev/null)
-	if [ $? -eq 1 ]; then
-		echo -e ${PASS} $2
-	else
-		
+	RET=$?
+    if [ $RET -eq 0 ]; then
 		echo -e "${FAIL} $2 (should reject)"
 		echo -e "-----Message:"
 		echo -e ${OUTPUT}
 		echo -e "-----End Message"
 		let fail_tests=fail_tests+1
+    else
+		echo -e ${PASS} $2
 	fi
 }
 
@@ -135,6 +135,8 @@ else
 	failExit 
 fi
 
+exit
+
 #IR Generation Tests
 
 # Test against reference compiler
@@ -153,12 +155,12 @@ do
 done
 
 if [ $fail_tests -eq 0 ]; then
-	echo -e ${PASSMODULE} Parser
+	echo -e ${PASSMODULE} IR Generation
 else
 	failExit
 fi
 
-#IR Generation Tests
+#Code Generation Tests
 
 # Test against reference compiler
 
