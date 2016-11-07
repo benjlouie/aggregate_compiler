@@ -1,6 +1,7 @@
 #!/bin/bash
+#Modified by Matthew Karasz
 
-COMPILER_CMD="./holiman"
+COMPILER_CMD="./swearjar"
 PASS="[\033[32mPASS\033[0m]"
 PASSMODULE="[\033[32mPASS MODULE\033[0m]"
 FAIL="[\033[22;41;30mFAIL\033[0m]"
@@ -69,6 +70,7 @@ failExit ()
 	    exit 1
     fi
 
+#see if the system has dos2unix cause we all like to switch between Linux and Windows intermittently
 type dos2unix &> /dev/null
 
 if [ $? -eq 0 ]; then
@@ -81,8 +83,7 @@ fi
 
 echo "----------Starting shell tests.----------"
 
-# Insert tests here.
-
+#Lexical tests
 echo "Starting good lexical tests."
 for file in $LEXGOOD; do
 	acceptFunc "${LEXER_CMD} ${file}" "lexer: $file "
@@ -94,7 +95,11 @@ for file in $LEXBAD; do
 done
 
 # Comment following line to keep the lexer output.
-rm -f cool-examples/*-lex-meh cool-examples/*-lex
+LEXOUTFILES=`find $TESTS/$LEXER_DIR/ -iname *.cl-lex*`
+for file in $LEXOUTFILES; do
+    rm -f $file
+done
+
 
 if [ $fail_tests -eq 0 ]; then
 	echo -e ${PASSMODULE} Parser
