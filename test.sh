@@ -21,6 +21,7 @@ ELSEFILES=`find $TESTS/$ELSECL -iname *.cl`
 
 fail_tests=0
 
+#Assumes the test will pass and errors if it doesn't.
 acceptFunc ()
 {
 	# echo "Testing $1 for return status 0."
@@ -36,6 +37,7 @@ acceptFunc ()
 	fi
 }
 
+#Assumes the test will fail and errors if it doesn't.
 rejectFunc ()
 {
 	# echo "Testing $1 for return status 1."
@@ -52,6 +54,7 @@ rejectFunc ()
 	fi
 }
 
+#General function to tell us info about failures.
 failExit ()
 {
 	echo "Number of failed shell tests: ${fail_tests}"
@@ -60,14 +63,21 @@ failExit ()
 	exit $((fail_tests))
 }
 
-echo "-----Converting to Unix Newlines.--------"
 
-if [ `ls *.cl 2> /dev/null | wc -l` -gt 0 ]; then
-	echo "There are .cl files in your aggregate direcotory. This file will not work with them there. Exiting."
-	exit 1
+    if [ `ls *.cl 2> /dev/null | wc -l` -gt 0 ]; then
+    	echo "There are .cl files in your aggregate direcotory. This file will not work with them there. Exiting."
+	    exit 1
+    fi
+
+type dos2unix &> /dev/null
+
+if [ $? -eq 0 ]; then
+    echo "-----Converting to Unix Newlines.--------"
+    dos2unix -q `find ${TESTS} -iname *.cl`
+
+else
+    echo "I'm assuming your files all have the correct line ending. Please install 'dos2unix' if they do not."
 fi
- 
-dos2unix -q `find ${TESTS} -iname *.cl`
 
 echo "----------Starting shell tests.----------"
 
@@ -135,6 +145,7 @@ else
 	failExit 
 fi
 
+#We haven't done IR generation or code gen yet, so don't go on.
 exit
 
 #IR Generation Tests

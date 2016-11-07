@@ -1,4 +1,4 @@
-# Team Regi Holiman
+# Team Swear Jar
 # Makefile
 
 # This stuff shouldn't change
@@ -16,17 +16,20 @@ SEMDIR=compiler_semantics
 CODEDIR=compiler_codegen
 TESTDIR=compiler_tests
 
+#Lexical Stuff
 LEX = flex
 LEXFILE = ${LEXDIR}/cool.l
 LEXC = ${BINDIR}/lex.yy.c
 LEXO = ${BINDIR}/lex.yy.o
 LEXFLAGS =
 
+#Parsing Files
 PARSERCPP=${BINDIR}/parser_cool.cpp 
 PARSERH=${BINDIR}/parser_cool.h
 PARSERO=${BINDIR}/parser_cool.o
 PARSERYPP=${PARSEDIR}/cool.ypp
 
+#Semantic Analysis
 SEMCPP=${SEMDIR}/semant.cpp 
 SEMH=${SEMDIR}/semant.h 
 SEMO=${SEMDIR}/semant.o
@@ -47,11 +50,13 @@ SEM_TYPECPP=${SEMDIR}/typeCheck.cpp
 SEM_TYPEH=${SEMDIR}/typeCheck.h
 SEM_TYPEO=${SEMDIR}/typeCheck.o
 
+#Code Generation - nothing for now
+
 SHELL='/bin/bash'
 REF_COMPILER="ref_cool"
 
 # Change the name of your compiler here.
-COMPILER_BIN="holiman"
+COMPILER_BIN="swearjar"
 
 # As you create more classes, add them here to make sure they get compiled and linked.
 # Arguments are compiled in order, from left to right.
@@ -66,7 +71,7 @@ ${BINDIR}/%.o: ${SRCDIR}/%.cpp ${SRCDIR}/%.h
 	${CXX} ${CXXFLAGS} -c ${SRCDIR}/$*.cpp -o $@
 	
 all: clean compiler
-	@echo -e "\033[0;32m    Build successful. Regi compiler ready for use. \033[0m"
+	@echo -e "\033[0;32m    Build successful. ${COMPILER_BIN} compiler ready for use. \033[0m"
 
 compiler: preliminary ${LEXO} ${PARSERO} ${_TARGETS} ${BINDIR}/driver.o ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO}
 	@echo Done compiling individual objects. Assembling pieces...
@@ -116,11 +121,11 @@ preliminary:
 	@echo Preliminary environment set up. Continuing compilation.
 
 test: compiler
-	@echo Compiling unit tests...
-	${CXX} ${CXXFLAGS} ${SRCDIR}/tests.cpp ${_TARGETS} -o ${TESTDIR}/tests
-	@echo Running unit tests...
-	@echo
-	@ ${BINDIR}/tests
+	#@echo Compiling unit tests...
+	#${CXX} ${CXXFLAGS} ${SRCDIR}/tests.cpp ${_TARGETS} -o ${TESTDIR}/tests
+	#@echo Running unit tests...
+	#@echo
+	#@ ${BINDIR}/tests
 	@echo Running integration tests...
 	@ ./test.sh
 	@echo
