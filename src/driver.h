@@ -35,6 +35,7 @@ string filename_append;
 //<className, inheritsFrom>
 std::unordered_map<std::string, std::string> globalTypeList;
 SymbolTable *globalSymTable;
+vTable *globalVTable;
 
 void printHelp(char *);
 int yylex(void);

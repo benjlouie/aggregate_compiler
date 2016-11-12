@@ -190,7 +190,7 @@ int main(int argc, char **argv)
 	}
 	if (buildASM)
 	{
-		// Lex, Parse, Typecheck and IR are done.
+		// Lex, Parse, Typecheck are done
 		code();
 	}
 
