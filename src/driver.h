@@ -17,6 +17,7 @@
 #include <unordered_map>
 #include "../compiler_semantics/semant.h"
 #include "../src/ast.h"
+#include "../compiler_codegen/codegen.h"
 
 extern int yylineno;
 extern int nelements;
@@ -34,6 +35,7 @@ string filename_append;
 //<className, inheritsFrom>
 std::unordered_map<std::string, std::string> globalTypeList;
 SymbolTable *globalSymTable;
+vTable *globalVTable;
 
 void printHelp(char *);
 int yylex(void);

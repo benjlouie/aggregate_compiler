@@ -192,12 +192,13 @@ int main(int argc, char **argv)
 	{
 		// Lex, Parse, Type Check are done.
 		// TODO: Insert your calls to IR-building functions here.
-		exit(1);
+		//exit(1);
 	}
 	if (buildASM)
 	{
 		// Lex, Parse, Typecheck and IR are done.
 		// TODO: Insert your calls to build machine assembly here.
+		code();
 		exit(1);
 	}
 

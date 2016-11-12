@@ -51,6 +51,13 @@ SEM_TYPEH=${SEMDIR}/typeCheck.h
 SEM_TYPEO=${SEMDIR}/typeCheck.o
 
 #Code Generation - nothing for now
+CODECPP=${CODEDIR}/codegen.cpp
+CODEH=${CODEDIR}/codegen.h
+CODEO=${CODEDIR}/codegen.o
+
+CODE_VTABLECPP=${CODEDIR}/vTable.cpp
+CODE_VTABLEH=${CODEDIR}/vTable.h
+CODE_VTABLEO=${CODEDIR}/vTable.o
 
 SHELL='/bin/bash'
 REF_COMPILER="ref_cool"
@@ -73,9 +80,9 @@ ${BINDIR}/%.o: ${SRCDIR}/%.cpp ${SRCDIR}/%.h
 all: clean compiler
 	@echo -e "\033[0;32m    Build successful. ${COMPILER_BIN} compiler ready for use. \033[0m"
 
-compiler: preliminary ${LEXO} ${PARSERO} ${_TARGETS} ${BINDIR}/driver.o ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO}
+compiler: preliminary ${LEXO} ${PARSERO} ${_TARGETS} ${BINDIR}/driver.o ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO} ${CODEO} ${CODE_VTABLEO}
 	@echo Done compiling individual objects. Assembling pieces...
-	${CXX} ${CXXFLAGS} -o ${COMPILER_BIN} ${LEXO} ${PARSERO} ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO} ${_TARGETS} ${BINDIR}/driver.o
+	${CXX} ${CXXFLAGS} -o ${COMPILER_BIN} ${LEXO} ${PARSERO} ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO} ${CODEO} ${CODE_VTABLEO} ${_TARGETS} ${BINDIR}/driver.o
 
 ${LEXO}: ${LEXC} ${PARSERH}
 	${CXX} ${CXXFLAGS} -c ${LEXC} -o ${LEXO}
@@ -103,6 +110,12 @@ ${SEM_SCOPINGO}: ${SEM_SCOPINGCPP} ${SEM_SCOPINGH}
 
 ${SEM_TYPEO}: ${SEM_TYPECPP} ${SEM_TYPEH}
 	${CXX} ${CXXFLAGS} -c ${SEM_TYPECPP} -o $@
+
+${CODEO}: ${CODECPP} ${CODEH}
+	${CXX} ${CXXFLAGS} -c ${CODECPP} -o ${CODEO}
+
+${CODE_VTABLEO}: ${CODE_VTABLECPP} ${CODE_VTABLEH}
+	${CXX} ${CXXFLAGS} -c ${CODE_VTABLECPP} -o ${CODE_VTABLEO}
 
     
 preliminary:
