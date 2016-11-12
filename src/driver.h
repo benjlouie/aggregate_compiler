@@ -17,6 +17,7 @@
 #include <unordered_map>
 #include "../compiler_semantics/semant.h"
 #include "../src/ast.h"
+#include "../compiler_codegen/codegen.h"
 
 extern int yylineno;
 extern int nelements;
