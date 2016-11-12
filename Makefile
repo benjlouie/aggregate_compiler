@@ -1,4 +1,4 @@
-# Team Regi Holiman
+# Team Swear Jar
 # Makefile
 
 # This stuff shouldn't change
@@ -16,37 +16,47 @@ SEMDIR=compiler_semantics
 CODEDIR=compiler_codegen
 TESTDIR=compiler_tests
 
+#Lexical Stuff
 LEX = flex
 LEXFILE = ${LEXDIR}/cool.l
 LEXC = ${BINDIR}/lex.yy.c
 LEXO = ${BINDIR}/lex.yy.o
 LEXFLAGS =
 
+#Parsing Files
 PARSERCPP=${BINDIR}/parser_cool.cpp 
 PARSERH=${BINDIR}/parser_cool.h
 PARSERO=${BINDIR}/parser_cool.o
 PARSERYPP=${PARSEDIR}/cool.ypp
 
+#Semantic Analysis
 SEMCPP=${SEMDIR}/semant.cpp 
 SEMH=${SEMDIR}/semant.h 
 SEMO=${SEMDIR}/semant.o
-#SEM_SYMBOLTABLECPP=${SEMDIR}/symbolTable.cpp
+
+SEM_SYMBOLTABLECPP=${SEMDIR}/symbolTable.cpp
 SEM_SYMBOLTABLEH=${SEMDIR}/symbolTable.h
 SEM_SYMBOLTABLEO=${SEMDIR}/symbolTable.o
+
 SEM_CLASSINHERITANCECPP=${SEMDIR}/classInheritance.cpp
 SEM_CLASSINHERITANCEH=${SEMDIR}/classInheritance.h
 SEM_CLASSINHERITANCEO=${SEMDIR}/classInheritance.o
+
 SEM_SCOPINGCPP=${SEMDIR}/scoping.cpp
 SEM_SCOPINGH=${SEMDIR}/scoping.h
 SEM_SCOPINGO=${SEMDIR}/scoping.o
 
+SEM_TYPECPP=${SEMDIR}/typeCheck.cpp
+SEM_TYPEH=${SEMDIR}/typeCheck.h
+SEM_TYPEO=${SEMDIR}/typeCheck.o
 
+#Code Generation - nothing for now
 
 SHELL='/bin/bash'
 REF_COMPILER="ref_cool"
 
 # Change the name of your compiler here.
-COMPILER_BIN="holiman"
+COMPILER_BIN="swearjar"
 
 # As you create more classes, add them here to make sure they get compiled and linked.
 # Arguments are compiled in order, from left to right.
@@ -61,11 +71,11 @@ ${BINDIR}/%.o: ${SRCDIR}/%.cpp ${SRCDIR}/%.h
 	${CXX} ${CXXFLAGS} -c ${SRCDIR}/$*.cpp -o $@
 	
 all: clean compiler
-	@echo -e "\033[0;32m    Build successful. Regi compiler ready for use. \033[0m"
+	@echo -e "\033[0;32m    Build successful. ${COMPILER_BIN} compiler ready for use. \033[0m"
 
-compiler: preliminary ${LEXO} ${PARSERO} ${_TARGETS} ${BINDIR}/driver.o ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO}
+compiler: preliminary ${LEXO} ${PARSERO} ${_TARGETS} ${BINDIR}/driver.o ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO}
 	@echo Done compiling individual objects. Assembling pieces...
-	${CXX} ${CXXFLAGS} -o ${COMPILER_BIN} ${LEXO} ${PARSERO} ${SEMO} ${SEM_SYMBOLTABLEH} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${_TARGETS} ${BINDIR}/driver.o
+	${CXX} ${CXXFLAGS} -o ${COMPILER_BIN} ${LEXO} ${PARSERO} ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO} ${_TARGETS} ${BINDIR}/driver.o
 
 ${LEXO}: ${LEXC} ${PARSERH}
 	${CXX} ${CXXFLAGS} -c ${LEXC} -o ${LEXO}
@@ -82,14 +92,18 @@ bisonerr: ${PARSERYPP}
 ${SEMO}: ${SEMCPP} ${SEMH} 
 	${CXX} ${CXXFLAGS} -c ${SEMCPP} -o ${SEMO}
     
-${SEM_SYMBOLTABLEO}: ${SEM_SYMBOLTABLEH}
-	${CXX} ${CXXFLAGS} -c ${SEM_SYMBOLTABLEH} -o $@
+${SEM_SYMBOLTABLEO}: ${SEM_SYMBOLTABLEH} ${SEM_SYMBOLTABLECPP}
+	${CXX} ${CXXFLAGS} -c ${SEM_SYMBOLTABLECPP} -o $@
 
 ${SEM_CLASSINHERITANCEO}: ${SEM_CLASSINHERITANCECPP} ${SEM_CLASSINHERITANCEH}
 	${CXX} ${CXXFLAGS} -c ${SEM_CLASSINHERITANCECPP} -o $@
     
 ${SEM_SCOPINGO}: ${SEM_SCOPINGCPP} ${SEM_SCOPINGH}
 	${CXX} ${CXXFLAGS} -c ${SEM_SCOPINGCPP} -o $@
+
+${SEM_TYPEO}: ${SEM_TYPECPP} ${SEM_TYPEH}
+	${CXX} ${CXXFLAGS} -c ${SEM_TYPECPP} -o $@
+
     
 preliminary:
 	@echo Checking if bin directory exists.
@@ -107,11 +121,11 @@ preliminary:
 	@echo Preliminary environment set up. Continuing compilation.
 
 test: compiler
-	@echo Compiling unit tests...
-	${CXX} ${CXXFLAGS} ${SRCDIR}/tests.cpp ${_TARGETS} -o ${TESTDIR}/tests
-	@echo Running unit tests...
-	@echo
-	@ ${BINDIR}/tests
+	#@echo Compiling unit tests...
+	#${CXX} ${CXXFLAGS} ${SRCDIR}/tests.cpp ${_TARGETS} -o ${TESTDIR}/tests
+	#@echo Running unit tests...
+	#@echo
+	#@ ${BINDIR}/tests
 	@echo Running integration tests...
 	@ ./test.sh
 	@echo
@@ -121,5 +135,5 @@ test: compiler
 	@echo
 
 clean:
-	rm -rf bin/ ${COMPILER_BIN} cool.output cool.tab.cpp
+	rm -rf bin/ ${COMPILER_BIN} cool.output cool.tab.cpp ${SEMDIR}/*.o
 

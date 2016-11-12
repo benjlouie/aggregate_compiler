@@ -1,6 +1,7 @@
 #!/bin/bash
+#Modified by Matthew Karasz
 
-COMPILER_CMD="./holiman"
+COMPILER_CMD="./swearjar"
 PASS="[\033[32mPASS\033[0m]"
 PASSMODULE="[\033[32mPASS MODULE\033[0m]"
 FAIL="[\033[22;41;30mFAIL\033[0m]"
@@ -21,6 +22,7 @@ ELSEFILES=`find $TESTS/$ELSECL -iname *.cl`
 
 fail_tests=0
 
+#Assumes the test will pass and errors if it doesn't.
 acceptFunc ()
 {
 	# echo "Testing $1 for return status 0."
@@ -36,22 +38,24 @@ acceptFunc ()
 	fi
 }
 
+#Assumes the test will fail and errors if it doesn't.
 rejectFunc ()
 {
 	# echo "Testing $1 for return status 1."
 	OUTPUT=$($1 2> /dev/null)
-	if [ $? -eq 1 ]; then
-		echo -e ${PASS} $2
-	else
-		
+	RET=$?
+    if [ $RET -eq 0 ]; then
 		echo -e "${FAIL} $2 (should reject)"
 		echo -e "-----Message:"
 		echo -e ${OUTPUT}
 		echo -e "-----End Message"
 		let fail_tests=fail_tests+1
+    else
+		echo -e ${PASS} $2
 	fi
 }
 
+#General function to tell us info about failures.
 failExit ()
 {
 	echo "Number of failed shell tests: ${fail_tests}"
@@ -60,19 +64,26 @@ failExit ()
 	exit $((fail_tests))
 }
 
-echo "-----Converting to Unix Newlines.--------"
 
-if [ `ls *.cl 2> /dev/null | wc -l` -gt 0 ]; then
-	echo "There are .cl files in your aggregate direcotory. This file will not work with them there. Exiting."
-	exit 1
+    if [ `ls *.cl 2> /dev/null | wc -l` -gt 0 ]; then
+    	echo "There are .cl files in your aggregate direcotory. This file will not work with them there. Exiting."
+	    exit 1
+    fi
+
+#see if the system has dos2unix cause we all like to switch between Linux and Windows intermittently
+type dos2unix &> /dev/null
+
+if [ $? -eq 0 ]; then
+    echo "-----Converting to Unix Newlines.--------"
+    dos2unix -q `find ${TESTS} -iname *.cl`
+
+else
+    echo "I'm assuming your files all have the correct line ending. Please install 'dos2unix' if they do not."
 fi
- 
-dos2unix -q `find ${TESTS} -iname *.cl`
 
 echo "----------Starting shell tests.----------"
 
-# Insert tests here.
-
+#Lexical tests
 echo "Starting good lexical tests."
 for file in $LEXGOOD; do
 	acceptFunc "${LEXER_CMD} ${file}" "lexer: $file "
@@ -84,7 +95,11 @@ for file in $LEXBAD; do
 done
 
 # Comment following line to keep the lexer output.
-rm -f cool-examples/*-lex-meh cool-examples/*-lex
+LEXOUTFILES=`find $TESTS/$LEXER_DIR/ -iname *.cl-lex*`
+for file in $LEXOUTFILES; do
+    rm -f $file
+done
+
 
 if [ $fail_tests -eq 0 ]; then
 	echo -e ${PASSMODULE} Parser
@@ -135,6 +150,9 @@ else
 	failExit 
 fi
 
+#We haven't done IR generation or code gen yet, so don't go on.
+exit
+
 #IR Generation Tests
 
 # Test against reference compiler
@@ -153,12 +171,12 @@ do
 done
 
 if [ $fail_tests -eq 0 ]; then
-	echo -e ${PASSMODULE} Parser
+	echo -e ${PASSMODULE} IR Generation
 else
 	failExit
 fi
 
-#IR Generation Tests
+#Code Generation Tests
 
 # Test against reference compiler
 
