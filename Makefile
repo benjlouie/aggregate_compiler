@@ -50,14 +50,22 @@ SEM_TYPECPP=${SEMDIR}/typeCheck.cpp
 SEM_TYPEH=${SEMDIR}/typeCheck.h
 SEM_TYPEO=${SEMDIR}/typeCheck.o
 
-#Code Generation - nothing for now
-CODECPP=${CODEDIR}/codegen.cpp
-CODEH=${CODEDIR}/codegen.h
-CODEO=${CODEDIR}/codegen.o
+#Code Generation
+CGENCPP=${CODEDIR}/codegen.cpp
+CGENH=${CODEDIR}/codegen.h
+CGENO=${BINDIR}/codegen.o
 
-CODE_VTABLECPP=${CODEDIR}/vTable.cpp
-CODE_VTABLEH=${CODEDIR}/vTable.h
-CODE_VTABLEO=${CODEDIR}/vTable.o
+CGEN_IRCPP=${CODEDIR}/linearIR.cpp
+CGEN_IRH=${CODEDIR}/linearIR.h
+CGEN_IRO=${BINDIR}/linearIR.o
+
+CGEN_VTCPP=${CODEDIR}/vTable.cpp
+CGEN_VTH=${CODEDIR}/vTable.h
+CGEN_VTO=${BINDIR}/vTable.o
+
+CGEN_ILCPP=${CODEDIR}/InstructionList.cpp
+CGEN_ILH=${CODEDIR}/InstructionList.h
+CGEN_ILO=${BINDIR}/InstructionList.o
 
 SHELL='/bin/bash'
 REF_COMPILER="ref_cool"
@@ -80,9 +88,9 @@ ${BINDIR}/%.o: ${SRCDIR}/%.cpp ${SRCDIR}/%.h
 all: clean compiler
 	@echo -e "\033[0;32m    Build successful. ${COMPILER_BIN} compiler ready for use. \033[0m"
 
-compiler: preliminary ${LEXO} ${PARSERO} ${_TARGETS} ${BINDIR}/driver.o ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO} ${CODEO} ${CODE_VTABLEO}
+compiler: preliminary ${LEXO} ${PARSERO} ${_TARGETS} ${BINDIR}/driver.o ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO} ${CGENO} ${CGEN_VTO} ${CGEN_IRO} ${CGEN_ILO}
 	@echo Done compiling individual objects. Assembling pieces...
-	${CXX} ${CXXFLAGS} -o ${COMPILER_BIN} ${LEXO} ${PARSERO} ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO} ${CODEO} ${CODE_VTABLEO} ${_TARGETS} ${BINDIR}/driver.o
+	${CXX} ${CXXFLAGS} -o ${COMPILER_BIN} ${LEXO} ${PARSERO} ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO} ${CGENO} ${CGEN_VTO} ${CGEN_IRO} ${CGEN_ILO} ${_TARGETS} ${BINDIR}/driver.o
 
 ${LEXO}: ${LEXC} ${PARSERH}
 	${CXX} ${CXXFLAGS} -c ${LEXC} -o ${LEXO}
@@ -96,6 +104,7 @@ ${PARSERCPP} ${PARSERH}: ${PARSERYPP}
 bisonerr: ${PARSERYPP}
 	bison -v ${PARSERYPP}
 
+#Semantic Analysis
 ${SEMO}: ${SEMCPP} ${SEMH} 
 	${CXX} ${CXXFLAGS} -c ${SEMCPP} -o ${SEMO}
     
@@ -111,12 +120,18 @@ ${SEM_SCOPINGO}: ${SEM_SCOPINGCPP} ${SEM_SCOPINGH}
 ${SEM_TYPEO}: ${SEM_TYPECPP} ${SEM_TYPEH}
 	${CXX} ${CXXFLAGS} -c ${SEM_TYPECPP} -o $@
 
-${CODEO}: ${CODECPP} ${CODEH}
-	${CXX} ${CXXFLAGS} -c ${CODECPP} -o ${CODEO}
+#Code Generation
+${CGENO}: ${CGENH} ${CGENCPP}
+	${CXX} ${CXXFLAGS} -c ${CGENCPP} -o $@
 
-${CODE_VTABLEO}: ${CODE_VTABLECPP} ${CODE_VTABLEH}
-	${CXX} ${CXXFLAGS} -c ${CODE_VTABLECPP} -o ${CODE_VTABLEO}
+${CGEN_IRO}: ${CGEN_IRH} ${CGEN_IRCPP}
+	${CXX} ${CXXFLAGS} -c ${CGEN_IRCPP} -o $@
 
+${CGEN_VTO}: ${CGEN_VTH} ${CGEN_VTCPP}
+	${CXX} ${CXXFLAGS} -c ${CGEN_VTCPP} -o $@
+
+${CGEN_ILO}: ${CGEN_ILH} ${CGEN_ILCPP}
+	${CXX} ${CXXFLAGS} -c ${CGEN_ILCPP} -o $@
     
 preliminary:
 	@echo Checking if bin directory exists.

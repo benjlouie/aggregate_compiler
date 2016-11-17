@@ -18,6 +18,7 @@
 #include "../compiler_semantics/semant.h"
 #include "../src/ast.h"
 #include "../compiler_codegen/codegen.h"
+#include "../compiler_codegen/vTable.h"
 
 extern int yylineno;
 extern int nelements;
