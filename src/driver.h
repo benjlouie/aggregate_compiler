@@ -40,6 +40,7 @@ vTable *globalVTable;
 unordered_map<size_t, string> globalStringTable;
 int whileLabelCount = 0;
 int ifLabelCount = 0;
+int caseLabelCount = 0;
 
 void printHelp(char *);
 int yylex(void);
