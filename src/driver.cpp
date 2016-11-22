@@ -18,6 +18,7 @@ int main(int argc, char **argv)
 	bool buildIR = true;
 	bool buildASM = true;
 	bool runGCC = true;
+	bool exec = false;
 	bool prettyprint = false;
 	
 	for (i = 1; i < argc; i++)
@@ -77,16 +78,16 @@ int main(int argc, char **argv)
 			buildIR = true;
 			buildASM = true;
 			runGCC = false;
-			filename_append = "-meh.s";
 		}
 		else
 		{
 			// Treat as input file name.
 			inputFileName = argv[i];
+			inFileName = inputFileName; //need a string for later operations, char * for existing ones
 		}
 	}
 
-	if (inputFileName == NULL)
+	if (inFileName == "")
 	{
 		// No input files given
 		printf("error: no input file given.\n");
@@ -109,12 +110,13 @@ int main(int argc, char **argv)
 	yyin = infile;
 
 	// Set up the output file.
-	if (filename_append.size() == 0)
-		filename_append = "-meh.s";
-	//outname = (char *)malloc(sizeof(char) * (strlen(inputFileName) + 10));
-	outname = inputFileName;
-	outname += filename_append;
-	outfile.open(outname, std::fstream::out);
+	if (filename_append.size() == 0) {
+		if (inFileName.substr(inFileName.length() - 3, 3) == ".cl")
+			outname = inFileName.substr(0, inFileName.length() - 3) + ".s";
+		else
+			outname = inFileName += "-sj.s";
+	}
+	outfile.open(outname, ios::out);
 
 	// Give the outfile to the lexer/parser
 
@@ -191,13 +193,29 @@ int main(int argc, char **argv)
 	if (buildASM)
 	{
 		// Lex, Parse, Typecheck are done
-		code();
+		code(outfile);
 	}
 
 	if (runGCC)
 	{
 		// This assembles and links your assembly to a binary.
-		system("gcc -Wall -g a.s");
+#ifdef __unix
+		int pid = fork();
+		if (pid == 0)
+			execl("gcc", "gcc", "-g", "-Wall", outname.c_str());
+		else {
+			if (exec) {
+				int returnStatus;
+				waitpid(pid, &returnStatus, 0);
+				if (returnStatus == 0)
+					execl("a.out", "a.out");
+				else
+					cerr << "Unable to assemble program" << endl;
+			}
+		}
+#else
+		system(("gcc -g -Wall" + outname).c_str());
+#endif
 	}
 
 	return 0;
@@ -220,6 +238,7 @@ void printHelp(char *programName)
 	printf("\t--type:   stop after type checking.\n");
 	printf("\t--ir:     stop after intermediate representation substep of code gen\n");
 	printf("\t--asm:    stop after generating assembly\n");
+	printf("\t--run:    Generate assembly, assembly, and execute\n");
 	printf("{input file} COOL source file to compile.\n");
 	printf("\n");
 }
