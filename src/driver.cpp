@@ -79,6 +79,17 @@ int main(int argc, char **argv)
 			buildASM = true;
 			runGCC = false;
 		}
+		else if (strcmp(argv[i], "--run") == 0)
+		{
+			// Stop after assembly generation
+			lexOnly = false;
+			parse = true;
+			typeCheck = true;
+			buildIR = true;
+			buildASM = true;
+			runGCC = true;
+			exec = true;
+		}
 		else
 		{
 			// Treat as input file name.
@@ -195,6 +206,7 @@ int main(int argc, char **argv)
 		// Lex, Parse, Typecheck are done
 		code(outfile);
 	}
+	outfile.close();
 
 	if (runGCC)
 	{
@@ -208,7 +220,7 @@ int main(int argc, char **argv)
 				int returnStatus;
 				waitpid(pid, &returnStatus, 0);
 				if (returnStatus == 0)
-					execl("a.out", "a.out");
+					execl("./a.out", "a.out");
 				else
 					cerr << "Unable to assemble program" << endl;
 			}
