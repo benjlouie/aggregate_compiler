@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/types.h>
 #include <vector>
 #include <fstream>
 #include <unordered_map>
@@ -19,6 +20,11 @@
 #include "../src/ast.h"
 #include "../compiler_codegen/codegen.h"
 #include "../compiler_codegen/vTable.h"
+
+#ifdef __unix
+#include <sys/wait.h>
+#include <unistd.h>
+#endif
 
 extern int yylineno;
 extern int nelements;
@@ -28,7 +34,8 @@ extern Node *root;
 extern int numErrors;
 
 
-char * inputFileName = NULL;
+char * inputFileName;
+string inFileName;
 FILE *infile = NULL;
 fstream outfile;
 string outname;
