@@ -79,6 +79,17 @@ int main(int argc, char **argv)
 			buildASM = true;
 			runGCC = false;
 		}
+		else if (strcmp(argv[i], "--run") == 0)
+		{
+			// Stop after assembly generation
+			lexOnly = false;
+			parse = true;
+			typeCheck = true;
+			buildIR = true;
+			buildASM = true;
+			runGCC = false;
+			exec = true;
+		}
 		else
 		{
 			// Treat as input file name.
