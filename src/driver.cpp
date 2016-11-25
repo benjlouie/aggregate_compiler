@@ -20,6 +20,7 @@ int main(int argc, char **argv)
 	bool runGCC = true;
 	bool exec = false;
 	bool prettyprint = false;
+
 	
 	for (i = 1; i < argc; i++)
 	{
@@ -125,8 +126,15 @@ int main(int argc, char **argv)
 		if (inFileName.substr(inFileName.length() - 3, 3) == ".cl")
 			outname = inFileName.substr(0, inFileName.length() - 3) + ".s";
 		else
-			outname = inFileName += "-sj.s";
+			outname = inFileName + "-sj.s";
+	} else {
+		if (inFileName.substr(inFileName.length() - 3, 3) == ".cl") {
+			outname = inFileName.substr(0, inFileName.length() - 3) + filename_append;
+		} else {
+			outname = inFileName + filename_append;
+		}
 	}
+
 	outfile.open(outname, ios::out);
 
 	// Give the outfile to the lexer/parser
@@ -213,20 +221,23 @@ int main(int argc, char **argv)
 		// This assembles and links your assembly to a binary.
 #ifdef __unix
 		int pid = fork();
-		if (pid == 0)
-			execl("gcc", "gcc", "-g", "-Wall", outname.c_str());
+		if (pid == 0) {
+			return system(("gcc -g -Wall " + outname).c_str());
+		}
 		else {
 			if (exec) {
 				int returnStatus;
 				waitpid(pid, &returnStatus, 0);
-				if (returnStatus == 0)
-					execl("./a.out", "a.out");
-				else
-					cerr << "Unable to assemble program" << endl;
+				if (returnStatus == 0) {
+					system("./a.out");
+				}
+				else {
+					cerr << "Unable to assemble program " << returnStatus << endl;
+				}
 			}
 		}
 #else
-		system(("gcc -g -Wall" + outname).c_str());
+		system(("gcc -g -Wall " + outname).c_str());
 #endif
 	}
 
