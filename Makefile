@@ -67,6 +67,11 @@ CGEN_ILCPP=${CODEDIR}/InstructionList.cpp
 CGEN_ILH=${CODEDIR}/InstructionList.h
 CGEN_ILO=${BINDIR}/InstructionList.o
 
+#Garbage Collection Stuff
+CGEN_GCCPP=${CODEDIR}/garbageCollector.cpp
+GCEN_GCH=${CODEDIR}/garbageCollector.h
+CGEN_GCO=${BINDIR}/garbageCollector.o
+
 SHELL='/bin/bash'
 REF_COMPILER="ref_cool"
 
@@ -88,9 +93,9 @@ ${BINDIR}/%.o: ${SRCDIR}/%.cpp ${SRCDIR}/%.h
 all: clean compiler
 	@echo -e "\033[0;32m    Build successful. ${COMPILER_BIN} compiler ready for use. \033[0m"
 
-compiler: preliminary ${LEXO} ${PARSERO} ${_TARGETS} ${BINDIR}/driver.o ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO} ${CGENO} ${CGEN_VTO} ${CGEN_IRO} ${CGEN_ILO}
+compiler: preliminary ${LEXO} ${PARSERO} ${_TARGETS} ${BINDIR}/driver.o ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO} ${CGENO} ${CGEN_VTO} ${CGEN_IRO} ${CGEN_ILO} ${CGEN_GCO}
 	@echo Done compiling individual objects. Assembling pieces...
-	${CXX} ${CXXFLAGS} -o ${COMPILER_BIN} ${LEXO} ${PARSERO} ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO} ${CGENO} ${CGEN_VTO} ${CGEN_IRO} ${CGEN_ILO} ${_TARGETS} ${BINDIR}/driver.o
+	${CXX} ${CXXFLAGS} -o ${COMPILER_BIN} ${LEXO} ${PARSERO} ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO} ${CGENO} ${CGEN_VTO} ${CGEN_IRO} ${CGEN_ILO} ${CGEN_GCO} ${_TARGETS} ${BINDIR}/driver.o
 
 ${LEXO}: ${LEXC} ${PARSERH}
 	${CXX} ${CXXFLAGS} -c ${LEXC} -o ${LEXO}
@@ -133,6 +138,9 @@ ${CGEN_VTO}: ${CGEN_VTH} ${CGEN_VTCPP}
 ${CGEN_ILO}: ${CGEN_ILH} ${CGEN_ILCPP}
 	${CXX} ${CXXFLAGS} -c ${CGEN_ILCPP} -o $@
     
+${CGEN_GCO}: ${CGEN_GCH} ${CGEN_GCCPP}
+	${CXX} ${CXXFLAGS} -c ${CGEN_GCCPP} -o $@
+
 preliminary:
 	@echo Checking if bin directory exists.
 	@ if [ ! -d "bin" ]; then mkdir bin; fi
