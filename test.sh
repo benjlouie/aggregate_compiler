@@ -166,10 +166,8 @@ mkdir $TESTFILEDIR
 echo "Testing Code generation with no user input vs COOL reference compiler."
 for file in $CGENFILES
 do
-	echo $file
 	${REF_COMPILER} $file > $REFOUTFILE
 	REFOUTRES=$?
-	echo "Done."
 	${COMPILER_CMD} --run $file > $SJOUTFILE
 	SJOUTRES=$?
 	DIFFOUT=`diff $REFOUTFILE $SJOUTFILE`
@@ -209,7 +207,7 @@ else
 	failExit
 fi
 
-echo "Testing Code generation with no user input vs COOL reference compiler."
+echo "Testing Code generation with user input vs COOL reference compiler."
 for file in $CGENUIFILES
 do
 	${REF_COMPILER} $file < $file-in > $REFOUTFILE
@@ -229,11 +227,15 @@ do
 			echo -e $MAYBE 
 			echo "Check to make sure these say about the same thing\n"
 			echo $DIFFOUT
-			echo "If they don't, check $file"
+			echo "If they don't, check $file, number $fail_tests"
+			mv $REFOUTFILE $TESTFILEDIR/$fail_tests-refoutput
+			mv $SJOUTFILE $TESTFILEDIR/$fail_tests-sjoutput
 			let fail_tests=fail_tests+1
 		else
 			echo -e ${FAIL} $file
 			let fail_tests=fail_tests+1
+			mv $REFOUTFILE $TESTFILEDIR/$fail_tests-refoutput
+			mv $SJOUTFILE $TESTFILEDIR/$fail_tests-sjoutput
 			echo $DIFFOUT
 		fi
 	else
