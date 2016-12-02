@@ -102,7 +102,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -147,22 +147,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\compiler_codegen\codegen.h" />
+    <ClInclude Include="..\compiler_codegen\InstructionList.h" />
+    <ClInclude Include="..\compiler_codegen\linearIR.h" />
+    <ClInclude Include="..\compiler_codegen\vTable.h" />
     <ClInclude Include="..\compiler_parser\cool.tab.h" />
     <ClInclude Include="..\compiler_semantics\classInheritance.h" />
     <ClInclude Include="..\compiler_semantics\scoping.h" />
     <ClInclude Include="..\compiler_semantics\semant.h" />
     <ClInclude Include="..\compiler_semantics\symbolTable.h" />
+    <ClInclude Include="..\compiler_semantics\typeCheck.h" />
     <ClInclude Include="..\src\ast.h" />
     <ClInclude Include="..\src\driver.h" />
     <ClInclude Include="..\src\testtree.h" />
     <ClInclude Include="..\src\tree.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\compiler_codegen\codegen.cpp" />
+    <ClCompile Include="..\compiler_codegen\InstructionList.cpp" />
+    <ClCompile Include="..\compiler_codegen\linearIR.cpp" />
+    <ClCompile Include="..\compiler_codegen\vTable.cpp" />
     <ClCompile Include="..\compiler_parser\cool.tab.cpp" />
     <ClCompile Include="..\compiler_scanner\cool.flex.cpp" />
     <ClCompile Include="..\compiler_semantics\classInheritance.cpp" />
     <ClCompile Include="..\compiler_semantics\scoping.cpp" />
     <ClCompile Include="..\compiler_semantics\semant.cpp" />
+    <ClCompile Include="..\compiler_semantics\symbolTable.cpp" />
+    <ClCompile Include="..\compiler_semantics\typeCheck.cpp" />
     <ClCompile Include="..\src\ast.cpp" />
     <ClCompile Include="..\src\driver.cpp" />
     <ClCompile Include="..\src\tree.cpp" />

@@ -1,0 +1,8 @@
+^..\compiler_parser\cool.ypp
+C:\Users\Administrator\Documents\GitHub\aggregate_compiler\compiler_parser\cool.tab.cpp
+^..\compiler_scanner\cool.l
+C:\Users\Administrator\Documents\GitHub\aggregate_compiler\compiler_scanner\cool.flex.cpp
+^..\compiler_scanner\cool.l
+C:\Users\Administrator\Documents\GitHub\aggregate_compiler\compiler_scanner\cool.flex.cpp
+^..\compiler_parser\cool.ypp
+C:\Users\Administrator\Documents\GitHub\aggregate_compiler\compiler_parser\cool.tab.cpp

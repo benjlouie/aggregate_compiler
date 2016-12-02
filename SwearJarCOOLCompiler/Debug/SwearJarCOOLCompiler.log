@@ -1,22 +1,2 @@
-﻿  Process "cool.l" flex file
-  cool.flex.cpp
-e:\program files\microsoft visual studio 14.0\vc\include\stdint.h(48): warning C4005: 'INT8_MIN': macro redefinition
-  e:\documents\github\aggregate_compiler\swearjarcoolcompiler\cool.flex.cpp(60): note: see previous definition of 'INT8_MIN'
-e:\program files\microsoft visual studio 14.0\vc\include\stdint.h(49): warning C4005: 'INT16_MIN': macro redefinition
-  e:\documents\github\aggregate_compiler\swearjarcoolcompiler\cool.flex.cpp(63): note: see previous definition of 'INT16_MIN'
-e:\program files\microsoft visual studio 14.0\vc\include\stdint.h(50): warning C4005: 'INT32_MIN': macro redefinition
-  e:\documents\github\aggregate_compiler\swearjarcoolcompiler\cool.flex.cpp(66): note: see previous definition of 'INT32_MIN'
-e:\program files\microsoft visual studio 14.0\vc\include\stdint.h(52): warning C4005: 'INT8_MAX': macro redefinition
-  e:\documents\github\aggregate_compiler\swearjarcoolcompiler\cool.flex.cpp(69): note: see previous definition of 'INT8_MAX'
-e:\program files\microsoft visual studio 14.0\vc\include\stdint.h(53): warning C4005: 'INT16_MAX': macro redefinition
-  e:\documents\github\aggregate_compiler\swearjarcoolcompiler\cool.flex.cpp(72): note: see previous definition of 'INT16_MAX'
-e:\program files\microsoft visual studio 14.0\vc\include\stdint.h(54): warning C4005: 'INT32_MAX': macro redefinition
-  e:\documents\github\aggregate_compiler\swearjarcoolcompiler\cool.flex.cpp(75): note: see previous definition of 'INT32_MAX'
-e:\program files\microsoft visual studio 14.0\vc\include\stdint.h(56): warning C4005: 'UINT8_MAX': macro redefinition
-  e:\documents\github\aggregate_compiler\swearjarcoolcompiler\cool.flex.cpp(78): note: see previous definition of 'UINT8_MAX'
-e:\program files\microsoft visual studio 14.0\vc\include\stdint.h(57): warning C4005: 'UINT16_MAX': macro redefinition
-  e:\documents\github\aggregate_compiler\swearjarcoolcompiler\cool.flex.cpp(81): note: see previous definition of 'UINT16_MAX'
-e:\program files\microsoft visual studio 14.0\vc\include\stdint.h(58): warning C4005: 'UINT32_MAX': macro redefinition
-  e:\documents\github\aggregate_compiler\swearjarcoolcompiler\cool.flex.cpp(84): note: see previous definition of 'UINT32_MAX'
-  SwearJarCOOLCompiler.vcxproj -> E:\Documents\GitHub\aggregate_compiler\SwearJarCOOLCompiler\Debug\SwearJarCOOLCompiler.exe
-  SwearJarCOOLCompiler.vcxproj -> E:\Documents\GitHub\aggregate_compiler\SwearJarCOOLCompiler\Debug\SwearJarCOOLCompiler.pdb (Full PDB)
+﻿  SwearJarCOOLCompiler.vcxproj -> C:\Users\Administrator\Documents\GitHub\aggregate_compiler\SwearJarCOOLCompiler\Debug\SwearJarCOOLCompiler.exe
+  SwearJarCOOLCompiler.vcxproj -> C:\Users\Administrator\Documents\GitHub\aggregate_compiler\SwearJarCOOLCompiler\Debug\SwearJarCOOLCompiler.pdb (Full PDB)
