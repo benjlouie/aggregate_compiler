@@ -5,6 +5,7 @@ COMPILER_CMD="./swearjar"
 PASS="[\033[32mPASS\033[0m]"
 PASSMODULE="[\033[32mPASS MODULE\033[0m]"
 FAIL="[\033[22;41;30mFAIL\033[0m]"
+MAYBE="[\033[FF;80;00mMAYBE\033[0m]"
 REF_COMPILER="./ref_cool"
 LEXER_CMD="${COMPILER_CMD} --lex"
 PARSER_CMD="${COMPILER_CMD} --parse"
@@ -16,9 +17,16 @@ LEXER_DIR="lexer"
 GOODCL="good"
 BADCL="bad"
 ELSECL="else"
+CGENCL="codegen"
+CGENUICL="codegen_input"
+TESTFILEDIR="$TESTS/testFiles"
+REFOUTFILE="$TESTFILEDIR/refOut.txt"
+SJOUTFILE="$TESTFILEDIR/sjOut.txt"
 LEXGOOD=`find $TESTS/$LEXER_DIR/$GOODCL -iname *.cl`
 LEXBAD=`find $TESTS/$LEXER_DIR/$BADCL -iname *.cl`
 ELSEFILES=`find $TESTS/$ELSECL -iname *.cl`
+CGENFILES=`find $TESTS/$CGENCL -iname *.cl`
+CGENUIFILES=`find $TESTS/$CGENUICL -iname *.cl`
 
 fail_tests=0
 
@@ -150,54 +158,98 @@ else
 	failExit 
 fi
 
-#We haven't done IR generation or code gen yet, so don't go on.
-exit
-
-#IR Generation Tests
-
-# Test against reference compiler
-
-echo "Testing IR generation return status vs COOL reference compiler."
-for file in $ELSEFILES
-do
-	${REF_COMPILER} --ir $file &> /dev/null
-	if [ -e "${file}-ir" ]; then
-		acceptFunc "${IR_CMD} ${file}" "ir generation: $file "
-	else
-		# echo "${file}-ast doesn't exist, so it failed reference compiler."
-		rejectFunc "${IR_CMD} ${file}" "ir generation: $file "
-	fi
-	rm -f ${file}-type ${file}-type-meh
-done
-
-if [ $fail_tests -eq 0 ]; then
-	echo -e ${PASSMODULE} IR Generation
-else
-	failExit
-fi
-
 #Code Generation Tests
 
-# Test against reference compiler
+mkdir $TESTFILEDIR
 
-echo "Testing Code generation return status vs COOL reference compiler."
-for file in $ELSEFILES
+# Test against reference compiler
+echo "Testing Code generation with no user input vs COOL reference compiler."
+for file in $CGENFILES
 do
-	${REF_COMPILER} --ir $file &> /dev/null
-	if [ -e "${file}-s" ]; then
-		acceptFunc "${IR_CMD} ${file}" "code gen: $file "
-	else
-		# echo "${file}-ast doesn't exist, so it failed reference compiler."
-		rejectFunc "${TYPE_CHECKER_CMD} ${file}" "code gen: $file "
+	${REF_COMPILER} $file > $REFOUTFILE
+	REFOUTRES=$?
+	${COMPILER_CMD} --run $file > $SJOUTFILE
+	SJOUTRES=$?
+	DIFFOUT=`diff $REFOUTFILE $SJOUTFILE`
+	if [ $REFOUTRES -ne $SJOUTRES ]; then 
+		echo "Check $file, number $fail_tests"
+		mv $REFOUTFILE $TESTFILEDIR/$fail_tests-refoutput
+		mv $SJOUTFILE $TESTFILEDIR/$fail_tests-sjoutput
+		let fail_tests=fail_tests+1
+		continue
 	fi
-	rm -f ${file}-type ${file}-type-meh
+
+	if [ "$DIFFOUT" != "" ]; then
+		if [ $REFOUTRES -eq 1 ]; then
+			echo -e $MAYBE 
+			echo "Check to make sure these say about the same thing\n"
+			echo $DIFFOUT
+			echo "If they don't, check $file, number $fail_tests"
+			mv $REFOUTFILE $TESTFILEDIR/$fail_tests-refoutput
+			mv $SJOUTFILE $TESTFILEDIR/$fail_tests-sjoutput
+			let fail_tests=fail_tests+1
+		else
+			echo -e ${FAIL} $file
+			let fail_tests=fail_tests+1
+			mv $REFOUTFILE $TESTFILEDIR/$fail_tests-refoutput
+			mv $SJOUTFILE $TESTFILEDIR/$fail_tests-sjoutput
+			echo $DIFFOUT
+		fi
+	else
+		echo -e ${PASS} $file
+	fi
+
 done
 
 if [ $fail_tests -eq 0 ]; then
-	echo -e ${PASSMODULE} Parser
+	echo -e ${PASSMODULE} Code Generation - No User Input
 else
 	failExit
 fi
+
+echo "Testing Code generation with user input vs COOL reference compiler."
+for file in $CGENUIFILES
+do
+	${REF_COMPILER} $file < $file-in > $REFOUTFILE
+	REFOUTRES=$?
+	${COMPILER_CMD} --run $file < $file-in > $SJOUTFILE
+	SJOUTRES=$?
+	DIFFOUT=`diff $REFOUTFILE $SJOUTFILE`
+	if [ $REFOUTRES -ne $SJOUTRES ]; then 
+		echo "Check $file"
+		mv $REFOUTFILE $TESTFILEDIR/$file-refoutput
+		mv $SJOUTFILE $TESTFILEDIR/$file-sjoutput
+		continue
+	fi
+
+	if [ $DIFFOUT != "" ]; then
+		if [ $REFOUTRES -eq 1 ]; then
+			echo -e $MAYBE 
+			echo "Check to make sure these say about the same thing\n"
+			echo $DIFFOUT
+			echo "If they don't, check $file, number $fail_tests"
+			mv $REFOUTFILE $TESTFILEDIR/$fail_tests-refoutput
+			mv $SJOUTFILE $TESTFILEDIR/$fail_tests-sjoutput
+			let fail_tests=fail_tests+1
+		else
+			echo -e ${FAIL} $file
+			let fail_tests=fail_tests+1
+			mv $REFOUTFILE $TESTFILEDIR/$fail_tests-refoutput
+			mv $SJOUTFILE $TESTFILEDIR/$fail_tests-sjoutput
+			echo $DIFFOUT
+		fi
+	else
+		echo -e ${PASS} $file
+	fi
+
+done
+
+if [ $fail_tests -eq 0 ]; then
+	echo -e ${PASSMODULE} Code Generation - No User Input
+else
+	failExit
+fi
+
 
 echo "Number of failed shell tests: ${fail_tests}"
 echo "----------Done with shell tests.----------"
