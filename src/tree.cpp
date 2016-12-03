@@ -80,6 +80,38 @@ Tree *Tree::getRightChild()
 		return this->children.at(1);
 }
 
+bool Tree::replaceChild(Tree *oldChild, Tree *newChild)
+{
+	for (size_t i = 0; i < children.size(); i++) {
+		if (children[i] == oldChild) {
+			children[i] = newChild;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Tree::deleteChild(Tree *child)
+{
+	for (auto it = children.begin(); it != children.end(); it++) {
+		if (*it == child) {
+			children.erase(it);
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Tree::replaceSelf(Tree *newNode)
+{
+	return this->parent->replaceChild(this, newNode);
+}
+
+bool Tree::deleteSelf(void)
+{
+	return this->parent->deleteChild(this);
+}
+
 vector<Tree *> Tree::getChildren()
 {
 	return this->children;

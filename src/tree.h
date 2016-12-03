@@ -79,6 +79,11 @@ public:
 	 */
 	Tree *getRightChild();
 
+	bool replaceChild(Tree *oldChild, Tree *newChild);
+	bool deleteChild(Tree *child);
+	bool replaceSelf(Tree *newNode);
+	bool deleteSelf(void);
+
 	/**
 	 * Gets all the children of the Tree.
 	 * @return vector of all children
