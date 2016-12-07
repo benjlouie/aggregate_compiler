@@ -209,6 +209,9 @@ int main(int argc, char **argv)
 		}
 		
 	}
+
+	//opts
+	eliminateUnreachable();
 	if (buildASM)
 	{
 		// Lex, Parse, Typecheck are done

@@ -72,6 +72,7 @@ public:
 	string valType;
 	string reg = "";
     int lineNumber;
+	bool reachable;
 
 	Node();
 	/**

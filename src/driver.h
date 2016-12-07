@@ -20,6 +20,7 @@
 #include "../src/ast.h"
 #include "../compiler_codegen/codegen.h"
 #include "../compiler_codegen/vTable.h"
+#include "../compiler_semantics/unreachable.h"
 
 #ifdef __unix
 #include <sys/wait.h>
