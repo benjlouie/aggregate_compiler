@@ -188,3 +188,30 @@ void Node::print(int level) {
 	cout << tabs << "type: " << valType << endl;
 	cout << tabs << "Line number: " << lineNumber << endl << endl;
 }
+
+Node *deepCopy_recursive(Node *orig)
+{
+	Node *copy = new Node;
+	//copy over the easy stuff
+	copy->type = orig->type;
+	copy->value = orig->value;
+	copy->valType = orig->valType;
+	copy->reg = orig->reg;
+	copy->lineNumber = orig->lineNumber;
+
+	//go through the children
+	for (Tree *OrigChild : orig->getChildren()) {
+		Node *copyChild = deepCopy_recursive((Node *)OrigChild);
+		//add child to root
+		copy->addChild(copyChild);
+		//set child->parent to root
+		copyChild->setParent(copy);
+	}
+
+	return copy;
+}
+
+Node * Node::deepCopy(void)
+{
+	return deepCopy_recursive(this);
+}

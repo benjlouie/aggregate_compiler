@@ -116,6 +116,8 @@ public:
 	/* call this one, not the other one with a param */
 	void print();
 	
+	Node *deepCopy(void);
+
 	virtual ~Node();
 };
 

@@ -9,6 +9,7 @@
 #define __TREE_H_
 
 #include <vector>
+#include <algorithm>
 #include <cstdlib>
 
 using namespace std;
@@ -80,9 +81,17 @@ public:
 	Tree *getRightChild();
 
 	bool replaceChild(Tree *oldChild, Tree *newChild);
+	bool replaceDescendant(vector<size_t> &path, Tree *newChild);
 	bool deleteChild(Tree *child);
 	bool replaceSelf(Tree *newNode);
 	bool deleteSelf(void);
+
+	// get path (child indices) from ancestor to descendant
+	vector<size_t> getPath(Tree *descendant);
+
+	virtual Tree *deepCopy(void);
+
+	bool setChild(size_t childInd, Tree *newChild);
 
 	/**
 	 * Gets all the children of the Tree.
