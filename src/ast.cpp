@@ -185,6 +185,7 @@ void Node::print(int level) {
 	 */
 	string tabs = string(level , '\t');
 	cout << tabs << enum2string(type) << endl;
+	cout << tabs << "value: " << value << endl;
 	cout << tabs << "type: " << valType << endl;
 	cout << tabs << "Line number: " << lineNumber << endl << endl;
 }
