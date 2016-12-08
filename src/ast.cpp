@@ -16,6 +16,7 @@ Node::Node()
 {
 	this->type = AST_NULL;
 	lineNumber = 0;
+	reachable = false;
 }
 
 Node::Node(NodeType type)
