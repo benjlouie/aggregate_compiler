@@ -21,6 +21,8 @@
 #include "../compiler_codegen/codegen.h"
 #include "../compiler_codegen/vTable.h"
 #include "../compiler_semantics/unreachable.h"
+#include "../compiler_semantics/constprop.h"
+#include "../compiler_semantics/loop_unswitch.h"
 
 #ifdef __unix
 #include <sys/wait.h>
@@ -54,5 +56,6 @@ void printHelp(char *);
 int yylex(void);
 int yyparse(void);
 void yylex_destroy(void);
+bool strengthreduce = false;
 
 #endif /* __DRIVER_H_ */

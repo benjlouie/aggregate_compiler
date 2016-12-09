@@ -71,6 +71,31 @@ CGEN_ILCPP=${CODEDIR}/InstructionList.cpp
 CGEN_ILH=${CODEDIR}/InstructionList.h
 CGEN_ILO=${BINDIR}/InstructionList.o
 
+#Garbage Collection Stuff
+CGEN_GCCPP=${CODEDIR}/garbageCollector.cpp
+GCEN_GCH=${CODEDIR}/garbageCollector.h
+CGEN_GCO=${BINDIR}/garbageCollector.o
+
+#Optimization Stuff
+##Matt - Constant Propogation
+SEM_CPCPP=${SEMDIR}/constprop.cpp
+SEM_CPH=${SEMDIR}/constprop.h
+SEM_CPO=${BINDIR}/constprop.o
+
+SEM_CPSCPP=${SEMDIR}/constpropsettings.cpp
+SEM_CPSH=${SEMDIR}/constpropsettings.h
+SEM_CPSO=${BINDIR}/constpropsettings.o
+
+##Ben's - loop unswitch
+SEM_LUCPP=${SEMDIR}/loop_unswitch.cpp
+SEM_LUH=${SEMDIR}/loop_unswitch.h
+SEM_LUO=${BINDIR}/loop_unswitch.o
+
+##Forest's - unreachable code elimination
+SEM_UCECPP=${SEMDIR}/unreachable.cpp
+SEM_UCEH=${SEMDIR}/unreachable.h
+SEM_UCEO=${BINDIR}/unreachable.o
+
 SHELL='/bin/bash'
 REF_COMPILER="ref_cool"
 
@@ -92,9 +117,9 @@ ${BINDIR}/%.o: ${SRCDIR}/%.cpp ${SRCDIR}/%.h
 all: compiler
 	@echo -e "\033[0;32m    Build successful. ${COMPILER_BIN} compiler ready for use. \033[0m"
 
-compiler: preliminary ${LEXO} ${PARSERO} ${_TARGETS} ${BINDIR}/driver.o ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO} ${SEM_UCEO} ${CGENO} ${CGEN_VTO} ${CGEN_IRO} ${CGEN_ILO}
+compiler: preliminary ${LEXO} ${PARSERO} ${_TARGETS} ${BINDIR}/driver.o ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO} ${CGENO} ${CGEN_VTO} ${CGEN_IRO} ${CGEN_ILO} ${SEM_CPSO} ${SEM_CPO} ${SEM_LUO} ${SEM_UCEO}
 	@echo Done compiling individual objects. Assembling pieces...
-	${CXX} ${CXXFLAGS} -o ${COMPILER_BIN} ${LEXO} ${PARSERO} ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO} ${SEM_UCEO} ${CGENO} ${CGEN_VTO} ${CGEN_IRO} ${CGEN_ILO} ${_TARGETS} ${BINDIR}/driver.o
+	${CXX} ${CXXFLAGS} -o ${COMPILER_BIN} ${LEXO} ${PARSERO} ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO} ${CGENO} ${CGEN_VTO} ${CGEN_IRO} ${CGEN_ILO}  ${SEM_CPSO} ${SEM_CPO} ${SEM_LUO} ${SEM_UCEO} ${_TARGETS} ${BINDIR}/driver.o
 
 ${LEXO}: ${LEXC} ${PARSERH}
 	${CXX} ${CXXFLAGS} -c ${LEXC} -o ${LEXO}
@@ -140,6 +165,23 @@ ${CGEN_VTO}: ${CGEN_VTH} ${CGEN_VTCPP}
 ${CGEN_ILO}: ${CGEN_ILH} ${CGEN_ILCPP}
 	${CXX} ${CXXFLAGS} -c ${CGEN_ILCPP} -o $@
     
+##Matt
+${SEM_CPO}: ${SEM_CPH} ${SEM_CPCPP}
+	${CXX} ${CXXFLAGS} -c ${SEM_CPCPP} -o $@
+
+${SEM_CPSO}: ${SEM_CPSH} ${SEM_CPSCPP}
+	${CXX} ${CXXFLAGS} -c ${SEM_CPSCPP} -o $@
+
+##Ben
+${SEM_LUO}: ${SEM_LUH} ${SEM_LUCPP}
+	${CXX} ${CXXFLAGS} -c ${SEM_LUCPP} -o $@
+
+##Forest
+${SEM_UCEO}: ${SEM_UCECPP} ${SEM_UCEH}
+	${CXX} ${CXXFLAGS} -c ${SEM_UCECPP} -o $@
+
+##Benji
+
 preliminary:
 	@echo Checking if bin directory exists.
 	@ if [ ! -d "bin" ]; then mkdir bin; fi
