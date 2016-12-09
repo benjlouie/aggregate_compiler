@@ -50,6 +50,10 @@ SEM_TYPECPP=${SEMDIR}/typeCheck.cpp
 SEM_TYPEH=${SEMDIR}/typeCheck.h
 SEM_TYPEO=${SEMDIR}/typeCheck.o
 
+SEM_UCECPP=${SEMDIR}/unreachable.cpp
+SEM_UCEO=${SEMDIR}/unreachable.o
+SEM_UCEH=${SEMDIR}/unreachable.h
+
 #Code Generation
 CGENCPP=${CODEDIR}/codegen.cpp
 CGENH=${CODEDIR}/codegen.h
@@ -66,11 +70,6 @@ CGEN_VTO=${BINDIR}/vTable.o
 CGEN_ILCPP=${CODEDIR}/InstructionList.cpp
 CGEN_ILH=${CODEDIR}/InstructionList.h
 CGEN_ILO=${BINDIR}/InstructionList.o
-
-#Garbage Collection Stuff
-CGEN_GCCPP=${CODEDIR}/garbageCollector.cpp
-GCEN_GCH=${CODEDIR}/garbageCollector.h
-CGEN_GCO=${BINDIR}/garbageCollector.o
 
 SHELL='/bin/bash'
 REF_COMPILER="ref_cool"
@@ -90,12 +89,12 @@ ${BINDIR}/%.o: ${SRCDIR}/%.cpp ${SRCDIR}/%.h
 	@echo Building $*
 	${CXX} ${CXXFLAGS} -c ${SRCDIR}/$*.cpp -o $@
 	
-all: clean compiler
+all: compiler
 	@echo -e "\033[0;32m    Build successful. ${COMPILER_BIN} compiler ready for use. \033[0m"
 
-compiler: preliminary ${LEXO} ${PARSERO} ${_TARGETS} ${BINDIR}/driver.o ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO} ${CGENO} ${CGEN_VTO} ${CGEN_IRO} ${CGEN_ILO} ${CGEN_GCO}
+compiler: preliminary ${LEXO} ${PARSERO} ${_TARGETS} ${BINDIR}/driver.o ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO} ${SEM_UCEO} ${CGENO} ${CGEN_VTO} ${CGEN_IRO} ${CGEN_ILO}
 	@echo Done compiling individual objects. Assembling pieces...
-	${CXX} ${CXXFLAGS} -o ${COMPILER_BIN} ${LEXO} ${PARSERO} ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO} ${CGENO} ${CGEN_VTO} ${CGEN_IRO} ${CGEN_ILO} ${CGEN_GCO} ${_TARGETS} ${BINDIR}/driver.o
+	${CXX} ${CXXFLAGS} -o ${COMPILER_BIN} ${LEXO} ${PARSERO} ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO} ${SEM_UCEO} ${CGENO} ${CGEN_VTO} ${CGEN_IRO} ${CGEN_ILO} ${_TARGETS} ${BINDIR}/driver.o
 
 ${LEXO}: ${LEXC} ${PARSERH}
 	${CXX} ${CXXFLAGS} -c ${LEXC} -o ${LEXO}
@@ -125,6 +124,9 @@ ${SEM_SCOPINGO}: ${SEM_SCOPINGCPP} ${SEM_SCOPINGH}
 ${SEM_TYPEO}: ${SEM_TYPECPP} ${SEM_TYPEH}
 	${CXX} ${CXXFLAGS} -c ${SEM_TYPECPP} -o $@
 
+${SEM_UCEO}: ${SEM_UCECPP} ${SEM_UCEH}
+	${CXX} ${CXXFLAGS} -c ${SEM_UCECPP} -o $@
+
 #Code Generation
 ${CGENO}: ${CGENH} ${CGENCPP}
 	${CXX} ${CXXFLAGS} -c ${CGENCPP} -o $@
@@ -138,9 +140,6 @@ ${CGEN_VTO}: ${CGEN_VTH} ${CGEN_VTCPP}
 ${CGEN_ILO}: ${CGEN_ILH} ${CGEN_ILCPP}
 	${CXX} ${CXXFLAGS} -c ${CGEN_ILCPP} -o $@
     
-${CGEN_GCO}: ${CGEN_GCH} ${CGEN_GCCPP}
-	${CXX} ${CXXFLAGS} -c ${CGEN_GCCPP} -o $@
-
 preliminary:
 	@echo Checking if bin directory exists.
 	@ if [ ! -d "bin" ]; then mkdir bin; fi
