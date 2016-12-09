@@ -243,20 +243,24 @@ int main(int argc, char **argv)
     if(constprop)
     {
         //do it
+        ConstProp *cp = new ConstProp();
+        cp->init();
     }
     if(unreachcodeelim)
     {
         //do it
-        //rebuild symbol table
     }
     if(loopunswitch) 
     {
-        //do it
+        unswitchLoops();
         //rebuild symbol table
+        rebuildSymTable();
     }
     if(loopunroll)
     {
         //do it
+        //rebuild symbol table, just in case we had a let
+        rebuildSymTable();
     }   
 	if (buildASM)
 	{
