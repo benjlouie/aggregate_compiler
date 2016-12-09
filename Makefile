@@ -50,6 +50,10 @@ SEM_TYPECPP=${SEMDIR}/typeCheck.cpp
 SEM_TYPEH=${SEMDIR}/typeCheck.h
 SEM_TYPEO=${SEMDIR}/typeCheck.o
 
+SEM_UCECPP=${SEMDIR}/unreachable.cpp
+SEM_UCEO=${SEMDIR}/unreachable.o
+SEM_UCEH=${SEMDIR}/unreachable.h
+
 #Code Generation
 CGENCPP=${CODEDIR}/codegen.cpp
 CGENH=${CODEDIR}/codegen.h
@@ -87,6 +91,10 @@ SEM_LUCPP=${SEMDIR}/loop_unswitch.cpp
 SEM_LUH=${SEMDIR}/loop_unswitch.h
 SEM_LUO=${BINDIR}/loop_unswitch.o
 
+##Forest's - unreachable code elimination
+SEM_UCECPP=${SEMDIR}/unreachable.cpp
+SEM_UCEH=${SEMDIR}/unreachable.h
+SEM_UCEO=${BINDIR}/unreachable.o
 
 SHELL='/bin/bash'
 REF_COMPILER="ref_cool"
@@ -109,9 +117,9 @@ ${BINDIR}/%.o: ${SRCDIR}/%.cpp ${SRCDIR}/%.h
 all: compiler
 	@echo -e "\033[0;32m    Build successful. ${COMPILER_BIN} compiler ready for use. \033[0m"
 
-compiler: preliminary ${LEXO} ${PARSERO} ${_TARGETS} ${BINDIR}/driver.o ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO} ${CGENO} ${CGEN_VTO} ${CGEN_IRO} ${CGEN_ILO} ${SEM_CPSO} ${SEM_CPO} ${SEM_LUO}
+compiler: preliminary ${LEXO} ${PARSERO} ${_TARGETS} ${BINDIR}/driver.o ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO} ${CGENO} ${CGEN_VTO} ${CGEN_IRO} ${CGEN_ILO} ${SEM_CPSO} ${SEM_CPO} ${SEM_LUO} ${SEM_UCEO}
 	@echo Done compiling individual objects. Assembling pieces...
-	${CXX} ${CXXFLAGS} -o ${COMPILER_BIN} ${LEXO} ${PARSERO} ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO} ${CGENO} ${CGEN_VTO} ${CGEN_IRO} ${CGEN_ILO}  ${SEM_CPSO} ${SEM_CPO} ${SEM_LUO} ${_TARGETS} ${BINDIR}/driver.o
+	${CXX} ${CXXFLAGS} -o ${COMPILER_BIN} ${LEXO} ${PARSERO} ${SEMO} ${SEM_SYMBOLTABLEO} ${SEM_CLASSINHERITANCEO} ${SEM_SCOPINGO} ${SEM_TYPEO} ${CGENO} ${CGEN_VTO} ${CGEN_IRO} ${CGEN_ILO}  ${SEM_CPSO} ${SEM_CPO} ${SEM_LUO} ${SEM_UCEO} ${_TARGETS} ${BINDIR}/driver.o
 
 ${LEXO}: ${LEXC} ${PARSERH}
 	${CXX} ${CXXFLAGS} -c ${LEXC} -o ${LEXO}
@@ -141,6 +149,9 @@ ${SEM_SCOPINGO}: ${SEM_SCOPINGCPP} ${SEM_SCOPINGH}
 ${SEM_TYPEO}: ${SEM_TYPECPP} ${SEM_TYPEH}
 	${CXX} ${CXXFLAGS} -c ${SEM_TYPECPP} -o $@
 
+${SEM_UCEO}: ${SEM_UCECPP} ${SEM_UCEH}
+	${CXX} ${CXXFLAGS} -c ${SEM_UCECPP} -o $@
+
 #Code Generation
 ${CGENO}: ${CGENH} ${CGENCPP}
 	${CXX} ${CXXFLAGS} -c ${CGENCPP} -o $@
@@ -166,9 +177,10 @@ ${SEM_LUO}: ${SEM_LUH} ${SEM_LUCPP}
 	${CXX} ${CXXFLAGS} -c ${SEM_LUCPP} -o $@
 
 ##Forest
+${SEM_UCEO}: ${SEM_UCECPP} ${SEM_UCEH}
+	${CXX} ${CXXFLAGS} -c ${SEM_UCECPP} -o $@
 
 ##Benji
-
 
 preliminary:
 	@echo Checking if bin directory exists.

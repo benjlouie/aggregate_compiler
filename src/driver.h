@@ -20,6 +20,7 @@
 #include "../src/ast.h"
 #include "../compiler_codegen/codegen.h"
 #include "../compiler_codegen/vTable.h"
+#include "../compiler_semantics/unreachable.h"
 #include "../compiler_semantics/constprop.h"
 #include "../compiler_semantics/loop_unswitch.h"
 

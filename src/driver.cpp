@@ -240,6 +240,7 @@ int main(int argc, char **argv)
 		}
 		
 	}
+
     if(constprop)
     {
         //do it
@@ -248,7 +249,7 @@ int main(int argc, char **argv)
     }
     if(unreachcodeelim)
     {
-        //do it
+	eliminateUnreachable();
     }
     if(loopunswitch) 
     {
@@ -256,7 +257,7 @@ int main(int argc, char **argv)
         //rebuild symbol table
         rebuildSymTable();
     }
-    if(loopunroll)
+    if(loopunroll || unreachcodeelim)
     {
         //do it
         //rebuild symbol table, just in case we had a let
