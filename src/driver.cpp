@@ -20,7 +20,10 @@ int main(int argc, char **argv)
 	bool runGCC = true;
 	bool exec = false;
 	bool prettyprint = false;
-
+    bool constprop = false;
+    bool loopunswitch = false;
+    bool loopunroll = false;
+    bool unreachcodeelim = false;
 	
 	for (i = 1; i < argc; i++)
 	{
@@ -91,6 +94,34 @@ int main(int argc, char **argv)
 			runGCC = true;
 			exec = true;
 		}
+        else if (strcmp(argv[i], "--cprop") == 0) 
+        {
+            constprop = true;
+        }
+        else if (strcmp(argv[i], "--loopunswitch") == 0) 
+        {
+            loopunswitch = true;
+        }
+        else if (strcmp(argv[i], "--loopunroll") == 0) 
+        {
+            loopunroll = true;
+        }
+        else if (strcmp(argv[i], "--codeelim") == 0) 
+        {
+            unreachcodeelim = true;
+        }
+        else if (strcmp(argv[i], "--strenreduce") == 0) 
+        {
+            strengthreduce = true;
+        }
+        else if (strcmp(argv[i], "--allopts") == 0) 
+        {
+            unreachcodeelim = true;
+            constprop = true;
+            loopunroll = true;
+            loopunswitch = true;
+            strengthreduce = true;
+        }
 		else
 		{
 			// Treat as input file name.
@@ -209,6 +240,24 @@ int main(int argc, char **argv)
 		}
 		
 	}
+    if(constprop)
+    {
+        //do it
+    }
+    if(unreachcodeelim)
+    {
+        //do it
+        //rebuild symbol table
+    }
+    if(loopunswitch) 
+    {
+        //do it
+        //rebuild symbol table
+    }
+    if(loopunroll)
+    {
+        //do it
+    }   
 	if (buildASM)
 	{
 		// Lex, Parse, Typecheck are done

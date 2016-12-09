@@ -53,5 +53,6 @@ void printHelp(char *);
 int yylex(void);
 int yyparse(void);
 void yylex_destroy(void);
+bool strengthreduce = false;
 
 #endif /* __DRIVER_H_ */
